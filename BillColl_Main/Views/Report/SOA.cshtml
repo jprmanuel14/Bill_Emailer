@@ -1,0 +1,94 @@
+@model SOAViewModel
+
+@{decimal amt = 0; }  
+<div class='py-3'>
+    <table class='table table-2 table-3'>
+        <thead>
+            <tr>
+                <th class='header' rowspan='2'>
+                    Invoice Date
+                </th>
+                <th class='header' rowspan='2'>
+                    Invoice No.
+                </th>
+                <th class='header' rowspan='2'>
+                    Reference No.
+                </th>
+                <th class='header aged ' rowspan='2'>
+                    Age
+                </th>
+                <th class='header descript' rowspan='2'>
+                    Bill Description
+                </th>
+                <th class='header' colspan='3' style='border-bottom: 2px solid black !important;'>
+                    Outstanding Balance
+                </th>
+            </tr>
+            <tr>
+                <th style='border-right:none !important'>Other Currency Code</th>
+                <th style='border-right: 2px solid black; border-top: 2px solid black;'>Amount in Other Currency</th>
+                <th class='header'>Amount in Peso</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td colspan='8' style='background-color: gray; border-top: 2px solid black !important; border-right: 2px solid black !important; '></td>
+            </tr>
+                @foreach (var data in Model.StatementOfAccounts)
+                {
+                    int ctr = 1;
+
+                    <tr>
+                        <td class='mydata'>
+                            <div class='d-flex'>
+                                <span style='font-size:12px;'>@ctr</span>
+                                <div class='pl-2'>@data.InvoiceDate</div>
+                            </div>
+                        </td>
+                        <td class='mydata'>
+                            @data.InvoiceNo
+                        </td>
+                        <td class='mydata'>
+                            @data.ReferenceNo
+                        </td>
+                        <td class='mydata aged'>
+                            @data.Age
+                        </td>
+                        <td class='mydata descript'>
+                            @data.BillDescription
+                        </td>
+                        <td class='mydata'>
+                            @data.OtherCurrCode
+                        </td>
+                        <td class='mydata'>
+                            @data.AmountInOtherCurr
+                        </td>
+                        <td class='mydata'>
+                            @data.AmountInPeso
+                        </td>
+                    </tr>
+                    amt += data.AmountInPeso;
+                    ctr++;
+                }                
+                <tr>
+                    <td colspan='8' style='background-color: gray; border-top: 2px solid black !important; border-right: 2px solid black !important;'></td>
+                </tr>
+            </tbody>
+        <tfoot>
+            <tr>
+                <td colspan='5'></td>
+                <td colspan='3'>
+                    <div style='display: flex !important; justify-content: space-between !important;'>
+                        <span class='font-weight-bolder'>
+                            GRAND TOTAL
+                        </span>
+                        <div class='font-weight-bolder' style='border-bottom: 4px double black;'>
+                           @amt;
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

@@ -1,0 +1,1349 @@
+@model ContactsViewModel
+@{
+    ViewData["Title"] = "Client Page";
+}
+<div id="tables" class="container-fluid">
+
+    <div class="pr-4">
+
+        @* <div class="w-100 d-none align-items-center justify-content-center p-2" id="statusContainer" style="background-color: green"> *@
+        <div class="text-center p-2 a-text-white d-none" id="statusContainer" style="background-color: green">
+            <span id="statusIcon" class="Appkit4-icon icon-circle-checkmark-fill"></span>
+            <span id="message_notif"></span>
+
+            @* <span id="statusIcon" class="Appkit4-icon icon-circle-checkmark-fill a-text-white w-100"></span> *@
+            @*<span class="Appkit4-icon icon-circle-delete-fill"></span>*@
+        </div>
+
+        <div class="pt-3 pl-3">
+            <span id="username" class="d-none">@(User.Identity.Name)</span>
+            <h3 class="font-weight-bold a-text-orange">Clients</h3>
+            <span>
+                View client and exception list
+            </span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center py-2">
+            <div id="myFiltersC" class="d-flex flex-wrap">
+            </div>
+            <!--<div class="d-flex">
+            <div class="d-flex" style="width:150px;">
+                <span>Per page</span>
+                <select id="pageintervalC" class="ml-1" style="height:21px;">-->
+            @*<option>5</option>*@
+            <!--<option>10</option>
+                        <option>20</option>
+                        <option>30</option>
+                    </select>
+                </div>
+                <div class="d-flex">
+                    Showing <div class="mx-1" id="firstrowC"></div> to <div class="mx-1" id="lastrowC"></div> of <div class="mx-1" id="totaldataC"></div>
+                </div>
+            </div>-->
+        </div>
+        <div class="d-flex justify-content-between pb-3 pr-3">
+            <div class="col-lg-4">
+                <form>
+
+                    <div class="d-flex align-items-center searchContainer">
+                        <span class="Appkit4-icon icon-search-outline"></span>
+                        <input id="RefClientName" type="text" class="form-control w-100 me-2 remove-input-border w-100" placeholder="Search Client" />
+
+                    </div>
+                    <button id="BtnSubmitReference" style="display: none;">submit</button>
+                </form>
+            </div>
+            <div class="pr-2">
+
+                <button onclick="loadActivityLogs()" class="btn my-secondary-button">
+                    <span class="Appkit4-icon icon-time-outline"></span>
+                    Activity logs
+                </button>
+
+                <button id="BtnDownload" class="btn my-primary-button">
+                    <span class="Appkit4-icon icon-arrow-down-outline"></span>
+                    Download
+                </button>
+            </div>
+
+        </div>
+        @* <div class="w-100 overflow-auto tableFixHeadC px-3" style="max-height: 500px; min-height: 500px;"> *@
+
+        <div class="col-lg-12 d-flex align-items-center">
+
+            <div onclick="switchTab(1)" id="clientListTab" class="active-tab inactive-tab">
+                <span>Client list</span>
+            </div>
+            <div onclick="switchTab(2)" id="exceptionListTab" class="inactive-tab ml-2">
+                <span>Exception list</span>
+            </div>
+
+        </div>
+        <div id="clientTable" class="w-100 overflow-auto tableFixHeadC px-3 mt-4">
+            <table id="tblmyClients" class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            Client code
+                        </th>
+                        <th>
+                            Client name
+                        </th>
+
+                        <th>
+                            Bill number
+                        </th>
+                        <th>
+                            Invoice number
+                        </th>
+                        <th>
+                            Group
+                        </th>
+
+                        <th>
+                            Contact email
+                        </th>
+
+
+                        @*   <th>
+                        <div class="dropdown-custom">
+                        <a href="" class="btn m-0 p-0 font-weight-bold" role="button" style="line-height:1;" id="GroupSearchFilter" name="GroupSearchFilter" onclick="return ViewFilter(this);" aria-haspopup="true">
+                        <div class="d-flex align-items-center">
+                        Group
+                        <div class="ml-1 filter-img disable"></div>
+                        </div>
+                        </a>
+
+                        <div class="dropdown-menu-custom-2 mt-2" id="GroupSearchFilterPanel" aria-labelledby="GroupSearchFilter">
+                        <div>
+                        <ul id="GroupSearchList" class="list-unstyled mt-2">
+                        <li>
+                        <label class="font-weight-light check-label-custom">
+                        <input class="form-check-input mr-2" name="GroupSearchValue" type="radio" value="A-Z" />A-Z
+                        <span class="checkmark"></span>
+                        </label>
+                        </li>
+                        <li>
+                        <label class="font-weight-light check-label-custom">
+                        <input class="form-check-input mr-2" name="GroupSearchValue" type="radio" value="Z-A" />Z-A
+                        <span class="checkmark"></span>
+                        </label>
+                        </li>
+                        </ul>
+                        </div>
+                        <div class="py-3">
+                        <input class="form-control" id="GroupSearch" type="text" placeholder="Search group name" autocomplete="off" />
+                        </div>
+
+                        <div class="mt-3 d-flex justify-content-center">
+                        <button class="btn-primary-custom" id="btnApplyFilterGroupSearch">Apply</button>
+                        </div>
+                        </div>
+                        </div>
+                        </th>
+
+                        <th>
+                        <div class="dropdown-custom">
+                        <a href="" class="btn m-0 p-0 font-weight-bold" role="button" style="line-height:1;" id="ContactEmailFilter" name="ContactEmailFilter" onclick="return ViewFilter(this);" aria-haspopup="true">
+                        <div class="d-flex align-items-center">
+                        Contact email
+                        <div class="ml-1 filter-img disable"></div>
+                        </div>
+                        </a>
+
+                        <div class="dropdown-menu-custom-2 mt-2" id="ContactEmailFilterPanel" aria-labelledby="ContactEmailFilter">
+                        <div>
+                        <ul id="ContactEmailList" class="list-unstyled mt-2">
+                        <li>
+                        <label class="font-weight-light check-label-custom">
+                        <input class="form-check-input mr-2" name="ContactEmailListValue" type="radio" value="A-Z" />A-Z
+                        <span class="checkmark"></span>
+                        </label>
+                        </li>
+                        <li>
+                        <label class="font-weight-light check-label-custom">
+                        <input class="form-check-input mr-2" name="ContactEmailListValue" type="radio" value="Z-A" />Z-A
+                        <span class="checkmark"></span>
+                        </label>
+                        </li>
+                        </ul>
+                        </div>
+                        <div class="py-3">
+                        <input class="form-control" id="ContactEmail" type="text" placeholder="Search contact email" autocomplete="off" />
+                        </div>
+
+                        <div class="mt-3 d-flex justify-content-center">
+                        <button class="btn-primary-custom" id="btnApplyFilterContactEmail">Apply</button>
+                        </div>
+                        </div>
+                        </div>
+                        </th>*@
+                        <th style="min-width: 200px;">
+                            <div class="w-100 d-flex align-items-center justify-content-center">
+                                Actions
+                            </div>
+                        </th>
+
+                    </tr>
+                </thead>
+                <tbody id="tblBodyClients">
+                </tbody>
+                <tfoot class='d-none' id="tblFooterClients">
+                </tfoot>
+            </table>
+        </div>
+
+        <div id="exceptionTable" class="w-100 tableFixHeadExceptions px-3 mt-4 d-none">
+            <table id="tblmyExceptions" class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            Client code
+                        </th>
+                        <th>
+                            Client name
+                        </th>
+
+                        <th>
+                            Bill number
+                        </th>
+
+                        <th>
+                            Invoice number
+                        </th>
+
+                        <th>
+                            Group
+                        </th>
+
+                        <th>
+                            Contact email
+                        </th>
+
+                        <th>
+                            Previously sent date
+                        </th>
+
+                        @*      <th>
+                        <div class="dropdown-custom">
+                        <a href="" class="btn m-0 p-0 font-weight-bold" role="button" style="line-height:1;" id="PreviouslyDateSentFilter" name="PreviouslyDateSentFilter" onclick="return ViewFilter(this);" aria-haspopup="true">
+                        <div class="d-flex align-items-center">
+                        <div>
+                        Previously sent date
+                        </div>
+                        <div class="ml-1 filter-img disable"></div>
+                        </div>
+                        </a>
+                        <div class="dropdown-date-menu-custom mt-2" id="PreviouslyDateSentFilterPanel" aria-labelledby="PreviouslyDateSentFilter">
+                        <div>
+                        <ul id="PreviouslyDateSentList" class="list-unstyled mt-2">
+                        <li>
+                        <label class="font-weight-light check-label-custom">
+                        <input class="form-check-input mr-2" name="PreviouslyDateSentListValue" type="radio" value="Newest - Oldest" />Newest - Oldest
+                        <span class="checkmark"></span>
+                        </label>
+                        </li>
+                        <li>
+                        <label class="font-weight-light check-label-custom">
+                        <input class="form-check-input mr-2" name="PreviouslyDateSentListValue" type="radio" value="Oldest - Newest" />Oldest - Newest
+                        <span class="checkmark"></span>
+                        </label>
+                        </li>
+                        </ul>
+                        </div>
+
+                        <div class="d-flex">
+                        <div>
+                        <div class="input-group-append input-control-date-custom align-items-center" style="width:350px;">
+                        <input id="PreviouslyDateSentRangeFilter" name="PreviouslyDateSentRangeFilter" type="text" style="border:none;height: 32px;width:305px" autocomplete="off" placeholder="Date range" />
+                        </div>
+                        </div>
+                        </div>
+
+
+                        <div class="mt-3 d-flex justify-content-center">
+                        <button class="btn-primary-custom" id="btnApplyFilterPreviouslyDateSent">Apply</button>
+                        </div>
+                        </div>
+
+                        </div>
+
+                        </th>*@
+
+                        <th style="min-width: 80px;">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="tblBodyExceptions">
+                </tbody>
+                <tfoot id="tblFooterExceptions">
+                </tfoot>
+            </table>
+        </div>
+
+        <div id='footer' class=" d-none justify-content-center pt-2">
+            <nav>
+                <ul class="pagination c-pagination footerexception"></ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+
+@*Hidden tab for client details*@
+<div id="clientdetail" class="container-fluid d-none">
+
+
+    @* <div class="w-100 d-none align-items-center justify-content-center p-2" id="statusContainerUser" style="background-color: green"> *@
+    <div class="text-center p-2 a-text-white d-none" id="statusContainer" style="background-color: green">
+
+        <span id="statusIcon" class="Appkit4-icon icon-circle-checkmark-fill"></span>
+        <span id="statusText"></span>
+        @*<span class="Appkit4-icon icon-circle-delete-fill"></span>*@
+
+    </div>
+
+    <div class="d-flex align-items-center justify-content-start">
+        <span onclick="closeClientDetail()" class="Appkit4-icon icon-left-chevron-outline my-text-label"></span>
+
+        <div class="mt-4 d-flex flex-column ms-3">
+            <span class="a-text-orange font-weight-bold my-text-label">Client details</span>
+            <span class="mt-2 my-text-label">Manage and view client's details</span>
+        </div>
+    </div>
+
+    <div class="mt-5" style="margin-left: 25px;">
+        <span>Client name: </span>
+        <span id="selectedClient" class="fw-bold">Lorem ipsum</span>
+
+    </div>
+
+
+    <div class="mt-5 d-flex w-100 justify-content-between">
+
+        <div class="w-45 p-4 border">
+
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-bold">Clients (<span id="clientnumberofrows"></span>/10)</span>
+
+                <button id="addUserButton" disabled onclick="openAddUser()" class="disableBtn btn-primary-custom">
+                    <span class="Appkit4-icon icon-plus-outline"></span>
+                    <span>Add contact</span>
+                </button>
+            </div>
+
+            <table class="table mt-4">
+                <thead>
+                    <tr>
+                        <th>Contact email</th>
+                        <th>Contact number</th>
+                        <th>Designated group</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                @*Must be map thru javascript*@
+                <tbody id="clienttabledetails">
+                    @*     <tr>
+                    <td>
+                    <div class="container p-3">
+                    <span>loremipsum@gmail.com</span>
+                    </div>
+                    </td>
+                    <td>
+                    <div class="container p-3">
+                    <span>09372381231</span>
+                    </div>
+                    </td>
+                    <td>
+                    <div class="container p-3">
+                    <span>Tax and CAS</span>
+                    </div>
+                    </td>
+                    <td>
+                    <div class="container d-flex p-3">
+                    <span onclick="openEditUser()" class="Appkit4-icon icon-pencil-fill  a-text-grey"></span>
+                    <span class="Appkit4-icon icon-delete-fill ms-2 a-text-grey"></span>
+                    </div>
+                    </td>
+                    </tr>*@
+                </tbody>
+            </table>
+
+            @*    <div class="d-flex justify-content-between align-items-center">
+            <div>
+            <span>Showing</span>
+            <span> 1 </span>
+            <span> to </span>
+            <span> 3 </span>
+            </div>
+
+            <div>
+            <span>Previous</span>
+            <span> 1 </span>
+            <span> of </span>
+            <span> 30 </span>
+            <span> Next </span>
+            </div>
+            </div>*@
+        </div>
+
+        <div class="w-45 p-4 border">
+
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-bold">Engagement team (<span id="engagementnumberofrows"></span>/10)</span>
+
+                <button id="addengagementbtn" disabled onclick="openAddUserEngagement()" class="disableBtn btn-primary-custom">
+                    <span class="Appkit4-icon icon-plus-outline"></span>
+                    <span>Add contact</span>
+                </button>
+            </div>
+
+            <table class="table mt-4">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Contact email</th>
+                        <th>Designation</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="engagementtabledetails">
+                </tbody>
+            </table>
+
+            @*     <div class="d-flex justify-content-between align-items-center">
+            <div>
+            <span>Showing</span>
+            <span> 1 </span>
+            <span> to </span>
+            <span> 3 </span>
+            </div>
+
+            <div>
+            <span>Previous</span>
+            <span> 1 </span>
+            <span> of </span>
+            <span> 30 </span>
+            <span> Next </span>
+            </div>
+            </div>*@
+
+        </div>
+
+    </div>
+</div>
+@*Hidden tab for client details*@
+
+
+
+
+
+
+<div class="modal fade" id="ModalUpdateContacts" tabindex="-1" role="dialog" aria-labelledby="ModalUpdateContacts" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 1000px;">
+        <div class="modal-content" style="border-radius: 0px; min-height: 600px">
+            <div class="modal-body py-4 mx-auto" style="width:100%;">
+                <div id="ContactNameHeader" class="h5 font-weight-bold py-2"></div>
+
+                <div class="row w-100 ml-1" style="border-bottom: 2px solid #D04A02;">
+                    <div class="col-8">
+                        <div class="d-flex">
+                            <button id="cContactsbtn" class="btn btn-sp btn-primary-custom w-50 mt-2" style="border-radius:0;" onclick="return openTab('cContacts');">
+                                Client contacts
+                                <span id="ctrU" class="ml-1"></span>
+                            </button>
+                            <button id="eContactsbtn" class="btn btn-sp btn-primary-custom btn-side-panel-deactive-2 w-50 mt-2" style="border-radius:0;" onclick="return openTab('eContacts');">
+                                Engagement team
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="d-flex justify-content-end align-items-center px-4">
+                            <button id="BtnAddContact" class="btn btn-primary-custom" style="width:150px;">Add contact</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mx-1">
+                    <div id="cContacts" class="mt-3 w-100 sidebarTab">
+                        <div class="w-100 overflow-auto tableFixHeadCC px-2" style="max-height: 500px; min-height: 500px;">
+                            <table id="tblmycContacts" class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Contact email</th>
+                                        <th>Contact number</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblBodyCContacts">
+                                </tbody>
+                                <tfoot id="tblFooterCContacts">
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="eContacts" class="mt-3 w-100 sidebarTab" style="display:none;">
+                        <div class="w-100 overflow-auto tableFixHeadEC px-2" style="max-height: 500px; min-height: 500px;">
+                            <table id="tblmyeContacts" class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Contact email</th>
+                                        <th>Contact number</th>
+                                        <th>Designation</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblBodyEContacts">
+                                </tbody>
+                                <tfoot id="tblFooterEContacts">
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalAddNewContacts" tabindex="-1" role="dialog" aria-labelledby="ModalAddNewContacts" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border-radius: 0px;">
+            <div class="modal-body py-4 mx-auto" style="width:100%;">
+                <form id="SubmitContacts" method="post" asp-controller="Clients" asp-action="Submit" enctype="multipart/form-data">
+                    <div class="px-4">
+                        <input type="hidden" asp-for="eId" />
+                        <input type="hidden" asp-for="eClientCode" />
+                        <input type="hidden" asp-for="pageNumber" />
+                        <input type="hidden" asp-for="pageSize" />
+                        <input type="hidden" asp-for="SearchText" />
+
+
+                        <div class="d-flex">
+                            <div class="form-check form-check-inline">
+                                <label class="form-check-label check-label-custom">
+                                    Client
+                                    <input class="form-check-input" type="radio" asp-for="IsEngagement" value="False" id="rdClient" onclick="CheckValue(this);">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <label class="form-check-label check-label-custom">
+                                    Engagement
+                                    <input class="form-check-input" type="radio" asp-for="IsEngagement" value="True" id="rdEngagement" onclick="CheckValue(this);">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <span asp-validation-for="IsEngagement" class="text-danger"></span>
+                        </div>
+
+                        <div class="EngagementP d-none my-1">
+                            <div class="form-group row">
+                                <label asp-for="Name">Name</label>
+                                <input asp-for="Name" type="text" class="form-control" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div id="ClientP" class="d-none my-1">
+                            <div class="form-group row">
+                                <label asp-for="FirstName">First name</label>
+                                <input asp-for="FirstName" type="text" onch class="form-control" />
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+
+                                <label asp-for="MiddleName">Middle name</label>
+                                <input asp-for="MiddleName" type="text" class="form-control" />
+                                <span asp-validation-for="MiddleName" class="text-danger"></span>
+
+                                <label asp-for="LastName">Last name</label>
+                                <input asp-for="LastName" type="text" class="form-control" />
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+
+                                <label asp-for="Salutation">Salutation</label>
+                                <input asp-for="Salutation" type="text" class="form-control" />
+
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <label asp-for="Email">Email</label>
+                            <input asp-for="Email" type="text" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="ContactNumber">Contact number</label>
+                            <input asp-for="ContactNumber" type="text" class="form-control" />
+                            <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="Designation">Designation</label>
+                            <input asp-for="Designation" type="text" class="form-control" />
+                            <span asp-validation-for="Designation" class="text-danger"></span>
+                        </div>
+
+
+                        <div class="EngagementP d-none my-1">
+                            <div class="form-group row">
+                                <label asp-for="GroupName">Group</label>
+                                <select class="selectize-control w-100" asp-for="GroupName" placeholder="Select group">
+                                    <option value=""></option>
+                                    @if (Model.Groups.Count() != 0)
+                                    {
+                                        for (int i = 0; i < Model.Groups.Count(); i++)
+                                        {
+                                            <option value="@Model.Groups[i].Description">@Model.Groups[i].Description</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end py-2">
+                            <button class="btn-secondary-custom mr-2" data-dismiss="modal">Cancel</button>
+                            <input type="submit" class="btn btn-primary-custom" onclick="return ClearDisable();" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="ModalAddToException" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: none; display: flex; justify-content: center" role="document">
+        <div class="modal-content" style="width: 50%">
+            <div class="modal-body p-5 mx-auto" style="width:100%;">
+                <h4 class="a-text-orange">
+                    Add client contact
+                </h4>
+
+                <div class="mt-3">
+                    <span>
+                        Search an employee to fill out the details below
+                    </span>
+                </div>
+
+                <div class="mt-3">
+                    <span>First name <span style="color: red; font-weight: bold; margin-left: 5px">*</span></span>
+                    <input class="form-control mt-2" id="FnameInput" onchange='FirstNameUpdate()' placeholder="">
+                </div>
+
+                <div class="mt-3 d-none">
+                    <span>Middle name</span>
+                    <input class="form-control mt-2" id="MnameInput" onchange='MiddleNameUpdate()' placeholder="">
+                </div>
+
+                <div class="mt-3">
+                    <span>Last name <span style="color: red; font-weight: bold; margin-left: 5px">*</span></span>
+                    <input class="form-control mt-2" id="LnameInput" onchange='LastNameUpdate()' placeholder="">
+                </div>
+
+
+                <div class="mt-3">
+                    <span>Contact number</span>
+                    <input class="form-control mt-2" id="ContactNumberInput" onchange='ContactNumberUpdate()' placeholder="">
+                </div>
+
+                <div class="mt-3">
+                    <span>Salutation</span>
+                    <input class="form-control mt-2" id="salutationInput" onchange='salutationUpdate()' placeholder="">
+                </div>
+
+                <div class="mt-3">
+                    <div class="d-flex justify-content-between">
+                        <span>Email <span style="color: red; font-weight: bold; margin-left: 5px">*</span></span>
+
+                        <span id="emailInvalidLabel" class="a-text-red invalidInput d-none">invalid email address</span>
+                    </div>
+                    <div class="d-flex position-relative">
+
+                        <input type="email" class="form-control mt-2" id="emailInput" onchange="emailUpdate()" aria-describedby="emailHelp" placeholder="">
+
+                        <div id="invalidIcon" class="position-absolute end-0 me-2 d-none" style="margin-top: 20px;">
+                            <span class="Appkit4-icon icon-circle-delete-fill a-text-red"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <span>Designation</span>
+                    <input class="form-control mt-2" id="designationInput" onchange="designationUpdate()" placeholder="">
+                </div>
+
+
+                <div class="mt-3">
+                    <span>Select group <span style="color: red; font-weight: bold; margin-left: 5px">*</span></span>
+                </div>
+                <div id="groupContainer" class="dropdown-content mt-2 col-lg-12">
+
+                    <input type="text" onblur="removeFocusInput('groupList')" onfocus='focusInput("groupList")' placeholder="Select group" id="myInput" onkeyup="filterFunction('myInput', 'groupList')">
+
+                    <div id="groupList" class="customDropDown myBoxShadow" style="width: 90%">
+                    </div>
+                </div>
+
+
+                @*  <div class="mt-3 d-flex flex-column">
+                <span>Designated group <span class="a-text-red">*</span></span>
+
+                <div class="mt-2 w-100">
+                <div id="groupContainer" class="dropdown">
+                <button id="designatedGroup" class="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between border-full" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Select group
+
+
+                </button>
+                <ul id="groupList" class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton1">
+                </ul>
+                </div>
+                </div>
+                </div>
+                *@
+                <div class="mt-3">
+                    <span>Designated LOS</span>
+                    <input disabled type="email" class="form-control mt-2" id="designatedLos" placeholder="">
+                </div>
+
+                <div class="d-flex align-items-center justify-content-end mt-4">
+                    <div onclick="closeAddUser()" class="my-secondary-button button-padding">
+                        Cancel
+                    </div>
+
+                    <div onclick="addClientUser()" class="my-primary-button d-flex align-items-center justify-content-center button-padding ms-3">
+                        Add
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addUserEngagementModal" tabindex="-1" role="dialog" aria-labelledby="ModalAddToException" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: none; display: flex; justify-content: center">
+        <div class="modal-content" style="border-radius: 0px; width: 50%">
+            <div class="modal-body p-5 mx-auto" style="width:100%;">
+                <h4 class="a-text-orange">
+                    @*Add engagement team contact*@
+
+                    Add engagement team contact
+                </h4>
+
+                <div class="mt-3">
+                    <span>
+                        Search an employee to fill out the details below
+                    </span>
+                </div>
+
+                <div class="mt-3">
+                    @* <div class="d-flex align-items-center border h-padding">
+                    <span class="Appkit4-icon icon-search-outline"></span>
+                    <input type="text" class="form-control border-0 removeFocusOutline"  placeholder="Search" id="searchEngagement">
+                    <span class="Appkit4-icon icon-close-outline"></span>
+                    </div>
+                    *@
+                    <div id="groupContainer" class="dropdown-content mt-2 col-lg-12">
+
+                        <input type="text" onblur="removeFocusInput('engagementuserList')" onfocus='focusInput("engagementuserList")' placeholder="Search user" id="myInputEngagementUser" onkeyup="filterFunction('myInputEngagementUser','engagementuserList')">
+
+                        <div id="engagementuserList" class="customDropDown myBoxShadow" style="width: 90%; z-index: 9999999">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <span>Email address</span>
+                    <input type="email" onchange="addEmailEngagement()" class="form-control mt-2" id="engagementInputEmail" aria-describedby="emailHelp" placeholder="">
+                </div>
+
+                <div class="mt-3">
+                    <span>Designation</span>
+                    <input disabled type="email" class="form-control mt-2" id="engagementInputDesignation" aria-describedby="emailHelp" placeholder="">
+                </div>
+
+                <div class="mt-3">
+                    <span>Group</span>
+                    <input disabled class="form-control mt-2" id="engagementInputGroup" aria-describedby="emailHelp" placeholder="">
+                </div>
+
+                <div class="d-flex align-items-center justify-content-end mt-4">
+                    <div onclick="closeAddUserEngagement()" data-bs-dismiss="modal" class="my-secondary-button button-padding">
+                        Cancel
+                    </div>
+                    <!--
+                                        <div onclick="addUserEngagement()" class="my-primary-button d-flex align-items-center justify-content-center button-padding ms-3">
+                                            Add
+                                        </div> -->
+
+                    <button id="addbutton" disabled onclick="addUserEngagement()" class="my-primary-button d-flex align-items-center justify-content-center button-padding ms-3 disableBtn">
+                        Add
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="editUserEngagementModal" tabindex="-1" role="dialog" aria-labelledby="ModalAddToException" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: none; display: flex; justify-content: center">
+        <div class="modal-content" style="border-radius: 0px; width: 50%">
+            <div class="modal-body p-5 mx-auto" style="width:100%;">
+                <h4 class="a-text-orange">
+                    Edit secondary contact to engagemenet team
+                </h4>
+
+                <div class="mt-3">
+                    <span>
+                        Search an employee to fill out the details below
+                    </span>
+                </div>
+
+                <div class="mt-3">
+                    <span>Name</span>
+                    <input disabled type="email" class="form-control mt-2" id="engagementInputNameEdit" placeholder="">
+                </div>
+
+                <div class="mt-3">
+                    <span>Email address</span>
+                    <input type="email" onchange='editEmailEngagement()' class="form-control mt-2" id="engagementInputEmailEdit" aria-describedby="emailHelp" placeholder="">
+                </div>
+
+                <div class="mt-3">
+                    <span>Designation</span>
+                    <input disabled type="email" class="form-control mt-2" id="engagementInputDesignationEdit" aria-describedby="emailHelp" placeholder="">
+                </div>
+
+                <div class="mt-3">
+                    <span>Group</span>
+                    <input disabled type="email" class="form-control mt-2" id="engagementInputGroupEdit" aria-describedby="emailHelp" placeholder="">
+                </div>
+
+                <div class="d-flex align-items-center justify-content-end mt-4">
+                    <div onclick="closeAddUserEngagement()" data-bs-dismiss="modal" class="my-secondary-button button-padding">
+                        Cancel
+                    </div>
+
+                    <div onclick="updateUserEngagement()" class="my-primary-button d-flex align-items-center justify-content-center button-padding ms-3">
+                        Update
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalAddToExceptionConfirmation" tabindex="-1" role="dialog" aria-labelledby="ModalAddToException" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border-radius: 0px;">
+            <div class="modal-body py-4 mx-auto" style="width:100%;">
+                <div id="ExceptionContactNameHeader" class="h5 font-weight-bold py-2"></div>
+                <input type="hidden" id="ExceptionRefno" />
+
+
+                <span class="a-text-orange text-label-v2">
+                    Confirm action
+                </span>
+
+                <div class="mt-3">
+                    <span>
+                        Are you sure you want to move this invoice to exception list?
+                    </span>
+                </div>
+
+                <div class="mt-3 d-flex flex-column">
+                    <span>Select reason for exception <span class="a-text-red">*</span></span>
+
+                    <div class="mt-2 w-100">
+                        <div class="dropdown w-100">
+                            <button id='addReasonContainer' class="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between border-full" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div id="reasonValue" class='text-wrap' style='text-align: left;'>
+                                    Select reason
+                                </div>
+                            </button>
+                            <ul id="reasonList" class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            </ul>
+                        </div>
+
+                        <div id="other_add" class="w-100 mt-2 d-none position-relative">
+                            <span>Specify your reason <span class="a-text-red font-weight-bold">*</span></span>
+                            <textarea maxlength="120" onchange='otherReasonInputAdd()' id="otherReasonAddInput" type="text" class="form-control w-100 me-2 mt-1  w-100" placeholder="Other reason"></textarea>
+
+                            <div class="position-absolute" style="right: 5px; bottom:  10px;">
+                                <span id="totalCounterAdd">0</span><span>/120</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <div class="d-flex justify-content-end py-2 mt-5">
+                    <button class="my-secondary-button button-padding mr-2" onclick="cancelMove()">Cancel</button>
+
+                    <button disabled onclick='confirmMove()' id="SubmitException" class="my-primary-button button-padding ms-2 disableBtn">Move</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalAddToException" tabindex="-1" role="dialog" aria-labelledby="ModalAddToException" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border-radius: 0px;">
+            <div class="modal-body py-4 mx-auto" style="width:100%;">
+                <div id="ExceptionContactNameHeader" class="h5 font-weight-bold py-2"></div>
+                <input type="hidden" id="ExceptionRefno" />
+                <div class="px-4">
+                    <div class="form-group row">
+                        <label>Reasons</label>
+                        <textarea id="ExceptionReason" class="w-100 form-control"></textarea>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end py-2">
+                    <button class="btn-secondary-custom mr-2" data-dismiss="modal">Cancel</button>
+
+                    <button id="SubmitException" class="btn-primary-custom mr-2">Submit</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalUpdateReason" tabindex="-1" role="dialog" aria-labelledby="ModalAddToException" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border-radius: 0px;">
+            <div class="modal-body py-4 mx-auto" style="width:100%;">
+                <div id="ExceptionContactNameHeader" class="h5 font-weight-bold py-2"></div>
+                <input type="hidden" id="ExceptionRefno" />
+
+                <div>
+                    <span class="text-label-v2 a-text-orange">Confirm action</span>
+                </div>
+
+                <div class="mt-2">
+                    <span>Are you sure you want to update the reason for this exception of this client?</span>
+                </div>
+
+                <div class="mt-3 d-flex flex-column">
+
+                    <span>Current reason for exception of client</span>
+
+                    <div class="d-flex w-100 justify-content-between box-container mt-2">
+                        <span id="currentReasonLabel"></span>
+
+                        <span class="Appkit4-icon icon-down-chevron-outline"></span>
+                    </div>
+
+                </div>
+
+                <div class="mt-3 d-flex flex-column">
+                    <span>Update reason of exception <span class="a-text-red">*</span></span>
+
+                    <div class="mt-2 w-100">
+                        <div class="dropdown w-100">
+                            <button type="button" class="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between border-full" data-bs-toggle="dropdown" aria-expanded="false" id="updatedReasonContainer">
+                                <div id="reasonValue" class='text-wrap' style='text-align: left;'>
+                                    Select reason
+                                </div>
+                            </button>
+                            <ul id="reasonList" class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            </ul>
+                        </div>
+
+                        <div id="other_update" class="w-100 mt-2 d-none position-relative">
+                            <span>Specify your reason <span class="a-text-red font-weight-bold">*</span></span>
+                            <textarea maxlength="120" onchange='otherReasonInputUpdate()' id="otherReasonUpdateInput" type="text" class="form-control w-100 me-2 mt-1  w-100" placeholder="Other reason"></textarea>
+
+                            <div class="position-absolute" style="right: 5px; bottom:  10px;">
+                                <span id="totalCounterUpdate">0</span><span>/120</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end py-2">
+                    <button class="my-secondary-button button-padding mr-2" onclick="cancelUpdateException()">Cancel</button>
+
+                    <button id="SubmitExceptionUpdate" disabled onclick="updateException()" class="my-primary-button button-padding ms-2 disableBtn ">Update</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="ModalRemoveFromException" tabindex="-1" role="dialog" aria-labelledby="ModalAddToException" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border-radius: 0px;">
+            <div class="modal-body py-4 mx-auto" style="width:100%;">
+                <div id="ExceptionContactNameHeader" class="h5 font-weight-bold py-2"></div>
+                <input type="hidden" id="ExceptionRefno" />
+
+                <div>
+                    <span class="text-label-v2 a-text-orange">Confirm action</span>
+                </div>
+
+                <div class="mt-2">
+                    <span>Are you sure you want to remove this invoice to exception list?</span>
+                </div>
+
+
+
+                <div class="mt-3 d-flex flex-column">
+                    <span>Select reason for removing the invoice <span class="a-text-red">*</span></span>
+
+                    <div class="mt-2 w-100">
+                        <div class="dropdown w-100">
+                            <button class="btn dropdown-toggle w-100 text-wrap d-flex align-items-center justify-content-between border-full" type="button" id="removereasonValue" data-bs-toggle="dropdown" aria-expanded="false">
+                                Select reason
+
+
+                            </button>
+                            <ul id="reasonListDelete" class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            </ul>
+                        </div>
+
+                        <div id="other_delete" class="w-100 mt-2 d-none position-relative">
+                            <span>Specify your reason <span class="a-text-red font-weight-bold">*</span></span>
+                            <textarea maxlength="120" onchange='otherReasonInputDelete()' id="otherReasonDeleteInput" type="text" class="form-control w-100 me-2 mt-1  w-100" placeholder="Other reason"></textarea>
+
+                            <div class="position-absolute" style="right: 5px; bottom:  10px;">
+                                <span id="totalCounterDelete">0</span><span>/120</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end py-2">
+                    <button class="my-secondary-button button-padding mr-2" onclick="cancelException()">Cancel</button>
+
+                    <button id="SubmitException" class="my-primary-button button-padding ms-2" onclick="confirmRemoveFromException()">Remove</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="activityLogsModal" tabindex="-1" role="dialog" aria-labelledby="ModalAddToException" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered d-flex align-items-center justify-content-center col-lg-10" style="max-width: 80%;" role="document">
+        <div class="modal-content col-lg-11" style="border-radius: 4px;">
+            <div class="modal-body py-4 mx-auto" style="width:100%;">
+                <div id="ExceptionContactNameHeader" class="h5 font-weight-bold py-2"></div>
+                <input type="hidden" id="ExceptionRefno" />
+
+                <span class="my-text-label a-text-orange">
+                    Activity logs
+                </span>
+
+
+
+                <div class="col-lg-12 d-flex align-items-center justify-content-between">
+
+                    <div class="d-flex align-items-center searchContainer mt-4 col-lg-4 col-md-6 col-12">
+                        <span class="Appkit4-icon icon-search-outline"></span>
+                        <input id="searchVal" onchange="searchLogs()" type="text" class="form-control w-100 me-2 remove-input-border w-100" placeholder="Search client, invoice number and user" />
+
+                    </div>
+
+                    <button id="activityLogsDownload" onclick='downloadActivityLogs()' class="btn my-primary-button">
+                        <span class="Appkit4-icon icon-arrow-down-outline"></span>
+                        Download
+                    </button>
+                </div>
+
+                <!-- //generate button component -->
+
+
+                <div id="clientTable" class="w-100 overflow-scroll tableFixHeadC px-3 mt-4" style="max-height: 500px">
+                    <table id="tblmyClients" class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Date
+                                </th>
+                                <th>
+                                    Time
+                                </th>
+                                <th>
+                                    User
+                                </th>
+                                <th>
+                                    Client
+                                </th>
+                                <th>
+                                    Bill no.
+                                </th>
+                                <th>
+                                    Invoice no.
+                                </th>
+
+                                <th>
+                                    Action
+                                </th>
+
+                                <th>
+                                    Previous reason of exception
+                                </th>
+
+                                <th>
+                                    Current reason of exception
+                                </th>
+
+                                <th>
+                                    Reason of removal
+                                </th>
+
+
+
+
+                            </tr>
+                        </thead>
+                        <tbody id="tblBodyLogs">
+                        </tbody>
+                        <tfoot id="tblFooterLogs">
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-center py-2">
+                    <button class="my-primary-button button-padding mr-2" data-bs-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="ModalShowException" tabindex="-1" role="dialog" aria-labelledby="ModalAddToException" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered d-flex align-items-center justify-content-center" role="document">
+        <div class="modal-content col-lg-11" style="border-radius: 4px;">
+            <div class="modal-body py-4 mx-auto" style="width:100%;">
+                <div id="ExceptionContactNameHeader" class="h5 font-weight-bold py-2"></div>
+                <input type="hidden" id="ExceptionRefno" />
+
+                <span class="my-text-label a-text-orange">
+                    Client details
+                </span>
+
+
+                <div class="mt-3">
+                    <span>Client name</span>
+
+                    <div class="mt-2 col-12">
+                        <div id="viewCName" disabled class="col-12 text-description ">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="mt-3">
+                    <span>Client code</span>
+
+                    <div class="mt-2 col-12">
+                        <input id="viewCC" disabled class="col-12 text-description " />
+                    </div>
+                </div>
+
+
+                <div class="mt-3">
+                    <span>Reason</span>
+
+                    <div class="mt-2 col-12">
+                        <textarea id="viewReason" disabled class="col-12 text-description"></textarea>
+                    </div>
+                </div>
+
+
+                <div id="otherReasonContainer" class="mt-3 d-none">
+                    <span>Other reason</span>
+
+                    <div class="mt-2 col-12">
+                        <textarea id="viewOtherReason" disabled class="col-12 text-description"></textarea>
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="d-flex justify-content-center py-2">
+                    <button class="my-primary-button button-padding mr-2" onclick="closeViewException()">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="ModalAddToException" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: none; display: flex; justify-content: center" role="document">
+        <div class="modal-content" style="width: 50%">
+            <div class="modal-body p-5 mx-auto" style="width:100%;">
+                <h4 class="a-text-orange">
+                    Edit client contact details
+                </h4>
+
+                <div class="mt-3">
+                    <span>
+                        Edit and fill out the details below
+                    </span>
+                </div>
+
+                <div class="mt-3">
+                    <span>First name <span style="color: red; font-weight: bold; margin-left: 5px">*</span></span>
+                    <input disabled class="form-control mt-2" id="FnameInputEdit" onchange='FirstNameUpdateEdit()' placeholder="">
+                </div>
+
+                <div class="mt-3 d-none">
+                    <span>Middle name</span>
+                    <input disabled class="form-control mt-2" id="MnameInputEdit" onchange='MiddleNameUpdateEdit()' placeholder="">
+                </div>
+
+                <div class="mt-3">
+                    <span>Last name <span style="color: red; font-weight: bold; margin-left: 5px">*</span></span>
+                    <input disabled class="form-control mt-2" id="LnameInputEdit" onchange='LastNameUpdateEdit()' placeholder="">
+                </div>
+
+                <div class="mt-3">
+                    <span>Contact number</span>
+                    <input class="form-control mt-2" id="ContactNumberInputEdit" onchange='ContactNumberUpdateEdit()' placeholder="">
+                </div>
+
+                <div class="mt-3">
+                    <span>Salutation</span>
+                    <input class="form-control mt-2" id="salutationInputEdit" onchange='salutationUpdateEdit()' placeholder="">
+                </div>
+
+
+                <div class="mt-3">
+                    <div class="d-flex justify-content-between">
+                        <span>Email <span style="color: red; font-weight: bold; margin-left: 5px">*</span></span>
+
+                        <span id="emailInvalidLabelEdit" class="a-text-red invalidInput d-none">invalid email address</span>
+                    </div>
+                    <div class="d-flex position-relative">
+
+                        <input type="email" class="form-control mt-2" id="emailInputEdit" onchange="emailUpdateEdit()" aria-describedby="emailHelp" placeholder="">
+
+                        <div id="invalidIconEdit" class="position-absolute end-0 me-2 d-none" style="margin-top: 20px;">
+                            <span class="Appkit4-icon icon-circle-delete-fill a-text-red"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <span>Designation</span>
+                    <input class="form-control mt-2" id="designationInputEdit" onchange="designationUpdateEdit()" placeholder="">
+                </div>
+
+
+
+                <div class="mt-3 d-flex flex-column">
+                    <span>Select group <span class="a-text-red">*</span></span>
+
+                    @*   <div class="mt-2 w-100">
+                    <div class="dropdown">
+                    <button id="designatedGroupEdit" class="btn dropdown-toggle w-100 d-flex align-items-center justify-content-between border-full" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                    Select group
+                    </button>
+                    <ul id="groupListEdit" class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton1">
+                    </ul>
+                    </div>
+                    </div>*@
+
+                    <div id="groupContainer" class="dropdown-content mt-2 col-lg-12">
+
+                        <input type="text" onblur="removeFocusInput('groupListEdit')" onfocus='focusInput("groupListEdit")' placeholder="Select group" id="myInputEdit" onkeyup="filterFunction('myInputEdit', 'groupListEdit')">
+
+                        <div id="groupListEdit" class="customDropDown myBoxShadow" style="width: 90%">
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+                <div class="mt-3">
+                    <span>Designated LOS</span>
+                    <input disabled type="email" class="form-control mt-2" id="designatedLosEdit" placeholder="">
+                </div>
+
+                <div class="d-flex align-items-center justify-content-end mt-4">
+                    <div onclick="closeEditUser()" class="my-secondary-button button-padding">
+                        Cancel
+                    </div>
+
+                    <button id="updateButton" disabled onclick="updateClientUser()" class="disableBtn my-primary-button d-flex align-items-center justify-content-center button-padding ms-3">
+                        Update
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="ModalAddToException" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: none; display: flex; justify-content: center" role="document">
+        <div class="modal-content" style="width: 30%">
+            <div class="modal-body p-5 mx-auto" style="width:100%;">
+
+                <div class="d-flex">
+
+                    <div>
+                        <span class="Appkit4-icon icon-information-fill a-text-pink" style="font-size: 50px"></span>
+                    </div>
+
+                    <div class="d-flex flex-column ms-2">
+                        <h4 class="font-weight-bold">
+                            Delete contact
+                        </h4>
+
+                        <span style="margin-left: 26px;">
+                            Do you really want to delete contact <span class="font-weight-bold" style="font-weight: bold" id="emailToDelete"></span> This process cannot be undone.
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="d-flex align-items-center justify-content-end mt-4">
+                    <div onclick="cancelDelete()" class="my-secondary-button button-padding">
+                        Cancel
+                    </div>
+
+                    <div id="modalDeleteButton" onclick="confirmDelete()" class="my-primary-button d-flex align-items-center justify-content-center button-padding ms-3">
+                        Yes, Delete
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <environment include="Development">
+        <script src="~/js/client.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/client.js"></script>
+    </environment>
+}

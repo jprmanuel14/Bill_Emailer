@@ -1,0 +1,22 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Login Page";
+}
+
+
+ <div class="container">
+    <div class="w-50 mx-auto d-flex flex-column align-items-center justify-content-center" style="min-height:500px;">
+        
+
+         <div class="row justify-content-center py-3">
+                <img style="height: 100px; width: 100px;" src="~/img/visitor-fill-orange-102px.png" />
+            </div>
+            <div class="row">                
+                <input id="usernameInput" asp-for="Username" type="text" class="form-control" placeholder="Please enter your email">
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            
+
+            <button onclick='login()' type="button" class="btn my-primary-button mt-4">LOGIN</button>
+    </div>
+</div> 

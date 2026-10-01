@@ -1,0 +1,156 @@
+@inject BillColl_Main.Services.IUserContext UserContext
+@{
+    var currentUser = User.Identity.IsAuthenticated ? UserContext.Resolve(User) : null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bill Collection Tool</title>
+    <environment include="Development">
+        @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <link rel="stylesheet" href="~/css/site.css" />
+        <link href="~/lib/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet" />
+        <link href="~/lib/jqueryui/jquery-ui.css" rel="stylesheet" />
+        <!-- <link href="~/lib/selectize.js/css/selectize.css" rel="stylesheet" /> -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.css" integrity="sha512-Y+AaVWdRf6zsGm7eV+EGOIuqYZoi2wUQ7wF8oHbnLy8k2zdVGSxyjn2qDUMFkLRy/9mqOAE5BeyEqx1yxDTQIw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        @* <link rel="stylesheet" href="https://pwcappkit-static.azureedge.net/cdn/release/3.6.11/font-icon/css/appkit-font-codes.css"/> *@
+        @* <link rel="stylesheet" href="https://appkitcdn.pwc.com/appkit4/cdn/styles/4.10.1/appkit.min.css"> *@
+        <link rel="stylesheet" href="https://appkitcdn.pwc.com/appkit4/cdn/styles/4.10.1/appkit.min.css">
+    </environment>
+    <environment exclude="Development">
+        @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        @*<link href="~/css/site.css" rel="stylesheet" />*@
+        <link rel="stylesheet" href="~/css/site.css" />
+        <link href="~/lib/bootstrap-daterangepicker/daterangepicker.min.css" rel="stylesheet" />
+        <link href="~/lib/jqueryui/jquery-ui.min.css" rel="stylesheet" />
+        @* <link href="~/lib/selectize.js/css/selectize.css" rel="stylesheet" /> *@
+           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.css" integrity="sha512-Y+AaVWdRf6zsGm7eV+EGOIuqYZoi2wUQ7wF8oHbnLy8k2zdVGSxyjn2qDUMFkLRy/9mqOAE5BeyEqx1yxDTQIw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        @* <link rel="stylesheet" href="https://pwcappkit-static.azureedge.net/cdn/release/3.6.11/font-icon/css/appkit-font-codes.css"> *@
+        @* <link rel="stylesheet" href="https://appkitcdn.pwc.com/appkit4/cdn/styles/4.10.1/appkit.min.css"> *@
+        <link rel="stylesheet" href="https://appkitcdn.pwc.com/appkit4/cdn/styles/4.10.1/appkit.min.css">
+    </environment>
+</head>
+<body>
+
+    <div id="loader-panel" class="justify-content-center align-items-center" style="display:none;">
+        <div id="loader"></div>
+    </div>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <input type="hidden" id="jsonData" value="@currentUser?.ToJson()" />
+    }
+
+    <div class="wrapper">
+
+        <div id="content" class="w-100">
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow" style="height:64px;">
+                <div class="container-fluid" style="padding-left: 0px">
+                    <div class="d-flex justify-content-between w-100">
+                        <div class="d-flex align-items-center" style="margin-left: 20px">
+                            <img src="~/img/new_logo.png" width="60" height="20" />
+                            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index" style="font-family:Georgia; margin-left: 15px; margin-bottom: 10px">Bill Collection Tool</a>
+
+                        </div>
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <div class="dropdown">
+                                <button class="btn" data-bs-toggle="dropdown"><div class="dot-2">@User.Identity.Name.Substring(0, 1).ToUpper()</div></button>
+                                <div class="dropdown-menu dropdown-menu-right removeScroll signout-popper" aria-labelledby="dropdownMenuButton">
+                                    <form method="post">
+                                        <button class="dropdown-item" asp-action="LogOut" asp-controller="Home">Sign out</button>
+                                    </form>
+                                </div>
+                            </div>
+
+                           
+                        }
+
+                    </div>
+
+                </div>
+            </nav>
+            <main role="main" class="pb-3 d-flex">
+                @if (User.Identity.IsAuthenticated)
+                {
+                        <nav id="sidebar">
+                        @*  <div class="pl-3" style="display: flex; align-items: center; height: 64px; box-shadow: 0 0.25rem 0.75rem rgb(0 0 0 / 5%)">
+                    <a id="pwc-my-icon" href="" class="pt-2 d-flex justify-content-between align-items-end ">
+                    <img src="~/img/new_logo.png" width="70" height="30" />
+
+                    </a>
+                    </div>*@
+                            <div id="sidebarContainerId" class="sidebarContainer pt-3">
+                                <ul id="myDashboardlist" class="list-unstyled">
+                                    <li>
+                                        <a id="side-nav-home" style="color: #979797" class="btn btn-icon w-100 d-flex flex-column align-items-center justify-content-center li-container" asp-controller="Home" asp-action="Index">
+                                        @*<img src="~/img/PwC_Funct_Icons_Home_Fill_White_RGB.png" height="40" />*@
+                                            <span class="Appkit4-icon icon-home-outline nav-icon"></span>
+                                            <h10>Home page</h10>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a id="side-nav-client" style="color: #979797" class="btn  btn-icon w-100 d-flex flex-column align-items-center justify-content-center li-container" asp-controller="Clients" asp-action="Index">
+                                        @*<img src="~/img/PwC_Funct_Icons_Stewardship_Fill_Black_RGB.png" height="40" />*@
+                                            <span class="Appkit4-icon icon-community-outline nav-icon"></span>
+                                            <h10>Clients</h10>
+                                        </a>
+                                    </li>
+                                    @if (currentUser != null && currentUser.IsAdmin)
+                                    {
+                                        <li id='util-nav'>
+                                            <a id="side-nav-util" style="color: #979797" class="btn btn-icon w-100 d-flex flex-column align-items-center justify-content-center li-container" asp-controller="Settings" asp-action="Index">
+                                                @*<img src="~/img/PwC_Funct_Icons_Settings_Fill_Black_RGB.png" height="40" />*@
+                                                <span class="Appkit4-icon icon-setting-outline nav-icon"></span>
+                                                <h10>Utilities</h10>
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </nav>
+                }
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+    @*<footer class="border-top footer text-muted">
+            <div class="container">
+                &copy; 2022 - Billing and Collection automation tool - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </div>
+        </footer>*@
+    <environment include="Development">
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        @*<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>*@
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/lib/bootstrap-daterangepicker/moment.min.js"></script>
+        <script src="~/lib/bootstrap-daterangepicker/daterangepicker.js"></script>
+        <script src="~/lib/jqueryui/jquery-ui.js"></script>
+        <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+        <!-- <script src="~/lib/selectize.js/js/standalone/selectize.js"></script> -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.js" integrity="sha512-TCP0r/hsoR3XYFxxMqmxeCZSmHWkjdBiAGy+0xcQ+JU0hOBZMHho7O0x/bXZUf3DH6kcbGhuZFxONYXxMzd7EA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        @*<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>*@
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <script src="~/lib/bootstrap-daterangepicker/moment.min.js"></script>
+        <script src="~/lib/bootstrap-daterangepicker/daterangepicker.js"></script>
+        <script src="~/lib/jqueryui/jquery-ui.min.js"></script>
+        <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+        <!-- <script src="~/lib/selectize.js/js/standalone/selectize.js"></script> -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.js" integrity="sha512-TCP0r/hsoR3XYFxxMqmxeCZSmHWkjdBiAGy+0xcQ+JU0hOBZMHho7O0x/bXZUf3DH6kcbGhuZFxONYXxMzd7EA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="~/js/site.js"></script>
+    </environment>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

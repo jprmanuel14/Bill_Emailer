@@ -1,0 +1,449 @@
+@* @model LoginViewModel *@
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@{
+    ViewBag.Title = "Home page";
+}
+
+
+
+
+<div class="container-fluid pl-md-4 pt-4 container-custom">
+
+
+    <div class="row">
+        <div class="col-lg-3">
+
+                 <div>
+
+                <h3 class="a-text-orange font-weight-bold">Homepage</h3>
+                    <span>View list of delivered and undelivered emails</span>
+                </div>
+
+            <div class="w-100 mt-lg-5 mb-2" style="border: 1px solid #cdcdcd;position: relative; border-bottom: 0px">
+                @* <h1>User_Name:  @Model.Employee_Name</h1> *@
+
+                
+                @*Percentage container*@
+                <div id="BCStatusContainer" class="px-2 pt-5 pb-1 d-flex ms-3" style="min-height: 70px;">
+                    <div id="StatusDetails" class="description-nav-stat deactivate font-weight-bold a-text-orange">
+
+                    </div>
+                    <div id="StatusDetailRemarks" class="ms-3 d-flex align-items-center">
+
+                    </div>
+                </div>
+                <div id="BCDateContainer">
+                    <input type="hidden" id="cDateSentSelectedPage" />
+                    <input type="hidden" id="cDateSentSelectedRow" />
+
+                    <div class="d-flex justify-content-between align-items-center py-3">
+                        <div id="myFiltersP" class="d-flex flex-wrap">
+                           
+                        </div>
+                        <!--<div class="d-flex">
+                            <div class="d-flex" style="width:150px;">
+                                <span>Per page</span>
+                                <select id="pageintervalP" class="ml-1" style="height:21px;">-->
+                                    @*<option>5</option>*@
+                                    <!--<option>10</option>
+                                    <option>20</option>
+                                    <option>30</option>
+                                </select>
+                            </div>
+                            <div class="d-flex">
+                                Showing <div class="mx-1" id="firstrowP"></div> to <div class="mx-1" id="lastrowP"></div> of <div class="mx-1" id="totaldataP"></div>
+                            </div>
+                        </div>-->
+                    </div>
+
+                    @*Table content of dates*@
+                    <table id="tblDateStatus" class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Date sent
+                                </th>
+                                <th>
+                                    Delivery rate
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblBodyDateStatus">
+                        </tbody>
+                        <tfoot id="tblFooterDateStatus">
+                        </tfoot>
+                    </table>
+
+                   
+                </div>
+
+
+
+            </div>
+
+            <div class="d-flex justify-content-end" style="bottom:1px;right: 1px;height:50px;">
+                <nav>
+                    <ul class="pagination p-pagination"></ul>
+                </nav>
+            </div>
+        </div>
+        <div class="col-lg-9">
+            <div class="mr-4">
+                @*<div class="my-3">
+                        <form method="post" asp-action="SendMail" asp-controller="Home">
+                            <button class="btn btn-primary">Send</button>
+                        </form>
+                    </div>*@
+                <div class="row">
+                    <div class="col-5">
+                        <div class="d-flex">
+                            <button id="UndeliveredPbtn" class=" btn-sp my-btn w-50 mt-2" style="border-radius:0;" onclick="return openTab('UndeliveredP');">
+                                Undelivered
+                                <span id="ctrU" class="ml-1"></span>
+                            </button>
+                            <button id="DeliveredPbtn" class=" btn-sp my-btn btn-side-panel-deactive-2 w-50 mt-2" style="border-radius:0;" onclick="return openTab('DeliveredP');">
+                                Delivered
+                                <span id="ctrD" class="ml-1"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="col-lg-12 d-flex justify-content-end align-items-center px-4">
+                            @*<div class="d-flex align-items-center">
+                                    <label class="font-weight-light check-label-custom mr-2" style="height:8px;">
+                                        <input class="mr-2" name="chkSearchAllDates" type="checkbox" />
+                                        Search all dates
+                                        <span class="checkboxmark"></span>
+                                    </label>
+                                </div>*@
+
+                            <form class="col-lg-6">
+                               <div class="d-flex align-items-center searchContainer">
+                                    <span class="Appkit4-icon icon-search-outline"></span>
+                                    <input id="RefClientName" type="text" class="form-control w-100 me-2 remove-input-border" placeholder="Search client name" />
+                               </div>
+                                <button id="BtnSubmitReference" style="display: none;">submit</button>
+                            </form>
+
+                            <button id="BtnDownload" class="btn-primary-custom ms-2">
+
+                                <span class="Appkit4-icon icon-arrow-down-outline"></span>
+                                <span>Download</span>
+                            </button>
+                            <button id="BtnDownload2" class="btn-primary-custom mb-2 mr-2 d-none ml-2">Download</button>
+
+                           
+                        </div>
+                    </div>
+                </div>
+                <div class="row pt-3">
+                    <div id="UndeliveredP" class="mt-3 w-100 sidebarTab">
+                        <div class="d-flex justify-content-between align-items-center py-3">
+                            <div id="myFiltersU" class="d-flex flex-wrap">
+
+                            </div>
+                            <!--<div class="d-flex">
+                                <div class="d-flex" style="width:150px;">
+                                    <span>Per page</span>
+                                    <select id="pageintervalU" class="ml-1" style="height:21px;">-->
+                                        @*<option>5</option>*@
+                                        <!--<option>10</option>
+                                        <option>20</option>
+                                        <option>30</option>
+                                    </select>
+                                </div>
+                                <div class="d-flex">
+                                    Showing <div class="mx-1" id="firstrowU"></div> to <div class="mx-1" id="lastrowU"></div> of <div class="mx-1" id="totaldataU"></div>
+                                </div>
+                            </div>-->
+                        </div>
+
+                        <div class="w-100 overflow-auto tableFixHeadU px-2" style="min-height:600px;">
+                            <table id="tblmyUndelivered" class="table">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Client code
+                                        </th>
+                                        <th>
+                                            Client name
+                                        </th>
+                                        <th>
+                                            <div class="dropdown-custom">
+                                                 @* <a href="" class="btn m-0 p-0 font-weight-bold" role="button" style="line-height:1;" id="DateSendOutUFilter" name="DateSendOutUFilter" onclick="return ViewFilter(this);" aria-haspopup="true"> *@
+                                                    <div class="d-flex align-items-center">
+                                                        <div>
+                                                            <!-- Sent out date -->
+                                                            Statement date
+                                                        </div>
+                                                         @* <div class="ml-1 filter-img disable"></div> *@
+                                                    </div>
+                                                @* </a> *@
+                                                <div class="dropdown-date-menu-custom mt-2" id="DateSendOutUFilterPanel" aria-labelledby="DateSendOutUFilter">
+                                                    <div>
+                                                        <ul id="DateSendOutUList" class="list-unstyled mt-2">
+                                                            <li>
+                                                                <label class="font-weight-light check-label-custom">
+                                                                    <input class="form-check-input mr-2" name="DateSendOutUListValue" type="radio" value="Newest - Oldest" />Newest - Oldest
+                                                                    <span class="checkmark"></span>
+                                                                </label>
+                                                            </li>
+                                                            <li>
+                                                                <label class="font-weight-light check-label-custom">
+                                                                    <input class="form-check-input mr-2" name="DateSendOutUListValue" type="radio" value="Oldest - Newest" />Oldest - Newest
+                                                                    <span class="checkmark"></span>
+                                                                </label>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+
+                                                    <div class="d-flex">
+                                                        <div>
+                                                            @*<span style="font-weight:100">From</span>*@
+                                                            <div class="input-group-append input-control-date-custom align-items-center" style="width:350px;">
+                                                                <input id="DateSendOutURangeFilter" name="DateSendOutURangeFilter" type="text" style="border:none;height: 32px;width:305px" autocomplete="off" placeholder="Date range" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div class="mt-3 d-flex justify-content-center">
+                                                        <button class="btn-primary-custom" id="btnApplyFilterDateSendOutU">Apply</button>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblBodyUndelivered">
+                                </tbody>
+                                <tfoot id="tblFooterUndelivered">
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <div class="d-flex justify-content-end pt-2">
+                            <nav>
+                                <ul class="pagination u-pagination"></ul>
+                            </nav>
+                        </div>
+                    </div>
+
+                    <div id="DeliveredP" class="mt-3 w-100 sidebarTab" style="display:none;">
+
+                        <div class="d-flex justify-content-between align-items-center py-3">
+                            <div id="myFiltersD" class="d-flex flex-wrap">
+                             
+                            </div>
+                            <!--<div class="d-flex">
+                                <div class="d-flex" style="width:150px;">
+                                    <span>Per page</span>
+                                    <select id="pageintervalD" class="ml-1" style="height:21px;">-->
+                                        @*<option>5</option>*@
+                                        <!--<option>10</option>
+                                        <option>20</option>
+                                        <option>30</option>
+                                    </select>
+                                </div>
+                                <div class="d-flex">
+                                    Showing <div class="mx-1" id="firstrowD"></div> to <div class="mx-1" id="lastrowD"></div> of <div class="mx-1" id="totaldataD"></div>
+                                </div>
+                            </div>-->
+                        </div>
+                        <div class="w-100 overflow-auto tableFixHeadD px-2" style="min-height:600px;">
+                            <table id="tblmyDelivered" class="table">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Client code
+                                        </th>
+                                        <th>
+                                            Client name
+                                        </th>
+                                        @*<th>
+                                            Read receipt
+                                        </th>*@
+                                        <th>
+                                            <div class="dropdown-custom">
+                                                @* <a href="" class="btn m-0 p-0 font-weight-bold" role="button" style="line-height:1;" id="DateStatementFilter" name="DateStatementFilter" onclick="return ViewFilter(this);" aria-haspopup="true"> *@
+                                                    <div class="d-flex align-items-center">
+                                                        <div>
+                                                            @* Send out date *@
+                                                            Statement date
+                                                        </div>
+                                                         @* <div class="ml-1 filter-img disable"></div>  *@
+                                                    </div>
+                                                @* </a> *@
+                                                <div class="dropdown-date-menu-custom mt-2" id="DateStatementFilterPanel" aria-labelledby="DateStatementFilter">
+                                                    <div>
+                                                        <ul id="DateStatementList" class="list-unstyled mt-2">
+                                                            <li>
+                                                                <label class="font-weight-light check-label-custom">
+                                                                    <input class="form-check-input mr-2" name="DateStatementListValue" type="radio" value="Newest - Oldest" />Newest - Oldest
+                                                                    <span class="checkmark"></span>
+                                                                </label>
+                                                            </li>
+                                                            <li>
+                                                                <label class="font-weight-light check-label-custom">
+                                                                    <input class="form-check-input mr-2" name="DateStatementListValue" type="radio" value="Oldest - Newest" />Oldest - Newest
+                                                                    <span class="checkmark"></span>
+                                                                </label>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+
+                                                    <div class="d-flex">
+                                                        <div>
+                                                            @*<span style="font-weight:100">From</span>*@
+                                                            <div class="input-group-append input-control-date-custom align-items-center" style="width:350px;">
+                                                                <input id="DateStatementRangeFilter" name="DateStatementRangeFilter" type="text" style="border:none;height: 32px;width:305px" autocomplete="off" placeholder="Date range" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div class="mt-3 d-flex justify-content-center">
+                                                        <button class="btn-primary-custom" id="btnApplyFilterDateStatement">Apply</button>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblBodyDelivered"></tbody>
+                                <tfoot id="tblFooterDelivered"></tfoot>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-end pt-2">
+                            <nav>
+                                <ul class="pagination d-pagination"></ul>
+                            </nav>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="stamentModal" tabindex="-1" role="dialog" aria-labelledby="stamentModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered d-flex align-items-center justify-content-center" role="document" style="max-width: 1500px;">
+          <div class="modal-content" style="border-radius: 0px; min-height: 600px">
+
+            <div class='p-5'>
+                <p>Dear Sir/Ma'am</p>
+                <p>
+                    We are reaching out to remind you of your outstading invoice(s):
+                </p>
+
+                <div class='d-flex align-items-center justify-content-between mt-5'>
+                    <span class='fw-bold'>Isla Lipana and Co.</span>
+                    <span class='fw-bold'><span>Grand total:</span> 1,0008,000.00</span>
+                </div>
+
+                <div class='col-lg-12 d-flex align-items-center justify-content-center mt-3'>
+
+                    <div class='col-lg-6 d-flex align-items-center justify-content-center table-column border-l border-r' style='min-height: 100px'>
+                            <div class='col-lg-3 p-3 d-flex align-items-center justify-content-center'>
+                                <span class='fw-bold'>Invoice date</span>
+                            </div>
+                        <div class='col-lg-3 p-3 d-flex align-items-center justify-content-center'>
+                                <span class='fw-bold'>Invoice No.</span>
+                            </div>
+                        <div class='col-lg-3 p-3 d-flex align-items-center justify-content-center'>
+                                <span class='fw-bold'>Bill No.</span>
+                            </div>
+                        <div class='col-lg-3 p-3 d-flex align-items-center justify-content-center'>
+                                <span class='fw-bold'>No. Age (Days)</span>
+                            </div>
+
+
+                            
+                    </div>
+                    
+                    <div class='col-lg-6 flex-column align-items-center justify-content-center table-column border-l border-r' style='max-height: 100px'>
+                            <div class='col-lg-12 p-3 d-flex align-items-center justify-content-center'>
+                                <span class='fw-bold'>Outstanding Balance</span>
+                            </div>
+
+                            <div style='width: 90%; height:0.5px; background-color: #7E7F7F'>
+
+                            </div>
+
+                                  <div class='col-lg-12 d-flex align-items-center justify-content-center table-column' >
+                                        <div class='col-lg-4 p-3 d-flex align-items-center justify-content-center'>
+                                            <span class='fw-bold'>Other Currency Code</span>
+                                        </div>
+                                        <div class='col-lg-4 p-3 d-flex align-items-center justify-content-center'>
+                                            <span class='fw-bold'>Amount in Other Currency</span>
+                                        </div>
+                                        <div class='col-lg-4 p-3 d-flex align-items-center justify-content-center'>
+                                            <span class='fw-bold'>Amount in Peso</span>
+                                        </div>
+                            
+                                  </div>
+                            
+                    </div>
+
+                </div>
+
+                @*Items*@
+
+                <div class='col-lg-12 d-flex align-items-center justify-content-center'>
+
+                    <div class='col-lg-6 d-flex align-items-center justify-content-center border-bottom border-r border-l' style='min-height: 100px'>
+                        <div class='col-lg-3 p-3 d-flex align-items-center justify-content-center'>
+                            <span class='fw-bold'>Invoice date</span>
+                        </div>
+                        <div class='col-lg-3 p-3 d-flex align-items-center justify-content-center'>
+                            <span class='fw-bold'>Invoice No.</span>
+                        </div>
+                        <div class='col-lg-3 p-3 d-flex align-items-center justify-content-center'>
+                            <span class='fw-bold'>Bill No.</span>
+                        </div>
+                        <div class='col-lg-3 p-3 d-flex align-items-center justify-content-center'>
+                            <span class='fw-bold'>No. Age (Days)</span>
+                        </div>
+                    </div>
+
+                    <div class='col-lg-6 d-flex align-items-center justify-content-center border-bottom border-l border-r' style='min-height: 100px'>
+
+                        <div class='col-lg-4 p-3 d-flex align-items-center justify-content-center'>
+                            <span class='fw-bold'>Invoice date</span>
+                        </div>
+                        <div class='col-lg-4 p-3 d-flex align-items-center justify-content-center'>
+                            <span class='fw-bold'>Invoice No.</span>
+                        </div>
+                        <div class='col-lg-4 p-3 d-flex align-items-center justify-content-center'>
+                            <span class='fw-bold'>Bill No.</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+          </div>
+    </div>
+</div>
+
+@section Scripts{
+    <environment include="Development">
+        <script src="~/js/dashboard.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/dashboard.js"></script>
+    </environment>
+}

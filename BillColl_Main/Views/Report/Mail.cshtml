@@ -1,0 +1,185 @@
+@model MailReportViewModel
+@{decimal amt = 0; }
+<div class='container'>
+    <div>
+        <img src='../img/BillingAndCollection.png' class='w-100' />
+    </div>
+    <div class='pt-3 row'>
+        <div class='col-6'>
+            <div class='pt-5 font font-weight-bold'>
+                Dear Sir/Ma'am,
+            </div>
+            <div class='pt-5'>
+                <p>Good day! We hope you are keeping safe and well.</p>
+                <p>
+                    We are reaching out in relation to your unpaid invoices. As we were clearing our billing records, we noted that the same is yet to be settled.
+                    In this regard, we would appreciate it if you could expedite the settlement of this/these invoices.
+                </p>
+            </div>
+        </div>
+        <div class='col-6'>
+            <div class='d-flex align-items-center justify-content-center h-100'>
+                <img src='../img/graph-pwc.png' class='w-75' style='height:300px;' />
+                @*<img class='w-75' id='2' src='cid:graph-pwc.png' style='height:300px;'>*@
+            </div>
+        </div>
+    </div>
+    <div>
+        <p>
+            Kindly refer to our bank details as indicated below. If payment has already been made, kindly let us know and provide the proof of payment for our reference.
+        </p>
+    </div>
+    <div>
+        <div class='w-100 font font-weight-bold p-2' style='color: white; background-color:red'>Bank details</div>
+    </div>
+    <!-- Add pwc details details -->
+    <div class='pt-1'>
+        <table class='table p-1'>
+            <thead>
+                <tr>
+                    <th>
+                        Account Name
+                    </th>
+                    <th>
+                        Account Number
+                    </th>
+                    <th>
+                        Bank Name
+                    </th>
+                    <th>
+                        Branch
+                    </th>
+                    <th style='border-right:none'>
+                        Swift code
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Model.BankDetails.AccountName</td>
+                    <td>
+                        @Model.BankDetails.AccountNumber
+                    </td>
+                    <td>@Model.BankDetails.BankName</td>
+                    <td>@Model.BankDetails.Branch</td>
+                    <td>@Model.BankDetails.SwiftCode</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Invoice details -->
+    <div class='py-3'>
+        <table class='table table-2 table-3'>
+            <thead>
+                <tr>
+                    <th class='header' rowspan='2'>
+                        Invoice Date
+                    </th>
+                    <th class='header' rowspan='2'>
+                        Invoice No.
+                    </th>
+                    <th class='header' rowspan='2'>
+                        Reference No.
+                    </th>
+                    <th class='header aged ' rowspan='2'>
+                        Age
+                    </th>
+                    <th class='header descript' rowspan='2'>
+                        Bill Description
+                    </th>
+                    <th class='header' colspan='3' style='border-bottom: 2px solid black !important;'>
+                        Outstanding Balance
+                    </th>
+                </tr>
+                <tr>
+                    <th style='border-right:none !important'>Other Currency Code</th>
+                    <th style='border-right: 2px solid black; border-top: 2px solid black;'>Amount in Other Currency</th>
+                    <th class='header'>Amount in Peso</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td colspan='8' style='background-color: gray; border-top: 2px solid black !important; border-right: 2px solid black !important; '></td>
+                </tr>
+                @foreach (var data in Model.StatementOfAccounts)
+                {
+                    int ctr = 1;
+
+                    <tr>
+                        <td class='mydata'>
+                            <div class='d-flex'>
+                                <span style='font-size:12px;'>@ctr</span>
+                                <div class='pl-2'>@data.InvoiceDate</div>
+                            </div>
+                        </td>
+                        <td class='mydata'>
+                            @data.InvoiceNo
+                        </td>
+                        <td class='mydata'>
+                            @data.ReferenceNo
+                        </td>
+                        <td class='mydata aged'>
+                            @data.Age
+                        </td>
+                        <td class='mydata descript'>
+                            @data.BillDescription
+                        </td>
+                        <td class='mydata'>
+                            @data.OtherCurrCode
+                        </td>
+                        <td class='mydata'>
+                            @data.AmountInOtherCurr
+                        </td>
+                        <td class='mydata'>
+                            @data.AmountInPeso
+                        </td>
+                    </tr>
+                    amt += data.AmountInPeso;
+                    ctr++;
+                }
+
+                <tr>
+                    <td colspan='8' style='background-color: gray; border-top: 2px solid black !important; border-right: 2px solid black !important;'></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan='5'></td>
+                    <td colspan='3'>
+                        <div style='display: flex !important; justify-content: space-between !important;'>
+                            <span class='font-weight-bolder'>
+                                GRAND TOTAL
+                            </span>
+                            <div class='font-weight-bolder' style='border-bottom: 4px double black;'>
+                                @amt;
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class='pt-2'>
+        <p>Please let us know if you have any questions/clarifications on this. We look forward to receiving your feedback/confirmation.</p>
+    </div>
+    <div>
+        <img src='../img/meeting-pwc.png' class='w-100' />
+        
+    </div>
+    <div class='my-5 d-flex justify-content-center'>
+        <img src='../img/message-pwc.png' style='width:45px;height:40px;'/>
+       
+        <div>
+            <div class='ml-4 font-weight-bold'>
+                Got any concerns or clarifications regarding this email?
+            </div>
+            <div class='ml-4'>
+                You may reach out to <a href='#'>PH PwC Collections MBX (PH)</a>.
+            </div>
+        </div>
+
+    </div>
+</div>

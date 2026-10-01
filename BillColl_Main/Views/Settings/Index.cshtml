@@ -1,0 +1,775 @@
+@model ExceptionViewModel
+@{
+    ViewData["Title"] = "Utilities Page";
+}
+
+@{
+    ViewBag.Title = "Utilities page";
+}
+
+<div class="container-fluid">
+
+    <div class="pr-4">
+        <div class="text-center p-2 a-text-white d-none" id="statusContainer" style="background-color: green">
+
+            <span id="statusIcon" class="Appkit4-icon icon-circle-checkmark-fill"></span>
+            <span id="message_notif"></span>
+
+        </div>
+    <div class="pr-4">
+        <div class="pt-3 pl-3">
+            <span id="username" class="d-none">@(User.Identity.Name)</span>
+                    <span id="emp_name" class="d-none">@(User.Identity.Name)</span>
+
+                <h4 id="label-user-title" class="fw-bold a-text-orange">User access management</h4>
+            <span id="label-user">View and manage user access</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center py-2">
+            <div id="myFiltersUtil" class="d-flex flex-wrap">
+
+            </div>
+            @*<div class="d-flex">
+                <div class="d-flex" style="width:150px;">
+                    <span>Per page</span>
+                    <select id="pageintervalUtil" class="ml-1" style="height:21px;">
+                        <option>10</option>
+                        <option>20</option>
+                        <option>30</option>
+                    </select>
+                </div>
+                <div class="d-flex">
+                    Showing <div class="mx-1" id="firstrowUtil"></div> to <div class="mx-1" id="lastrowUtil"></div> of <div class="mx-1" id="totaldataUtil"></div>
+                </div>
+            </div>*@
+        </div>
+  @*      <div class="d-flex justify-content-end pb-3">
+            <div class="pr-2">
+                <button id="BtnDownload" class="btn btn-secondary-custom">Download</button>
+            </div>
+            <div class="pr-2">
+                <button id="BtnAddAccount" class="btn btn-primary-custom">Add account</button>
+            </div>
+
+            <div>
+                <form>
+                    <input id="RefClientName" type="text" class="form-control w-100 mb-2" placeholder="Type client name" />
+                    <button id="BtnSubmitReference" style="display: none;">submit</button>
+                </form>
+            </div>
+        </div>*@
+
+  <div class='d-flex align-items-center'>
+
+                <div id='userlistbutton' onclick='selectTab(0)' class='a-link p-3 active-link'>
+                    <span>User list
+                </div>
+
+                
+                <div id='secretarylistbutton' onclick='selectTab(1)' class='a-link p-3'>
+                    <span>Secretary list
+                </div>
+
+        </div>
+
+        <div class="d-flex align-items-center justify-content-between mt-3">
+
+            <div class="col-lg-4">
+
+                    <div class="d-flex align-items-center searchContainer">
+                        <span class="Appkit4-icon icon-search-outline"></span>
+                        <input onchange='searchFromList()' id="searchVal"  type="text" class="form-control w-100 me-2 remove-input-border w-100" placeholder="Search" />
+
+                    
+                    </div>
+                    @*<button id="BtnSubmitReference" style="display: none;">submit</button>*@
+                
+            </div>
+
+      
+
+          <div class="d-flex">
+                <button  onclick="openAdminLogs()" class="btn my-secondary-button">
+                    <span class="Appkit4-icon icon-time-outline"></span>
+                    <span id='logs' > Admin logs</span>
+                </button>
+
+                <button onclick="openAddUser()" class="btn my-primary-button ms-2">
+                    <span class="Appkit4-icon icon-plus-outline"></span>
+                    <span id='addUserButton'>Add user</span>
+                </button>
+          </div>
+
+        </div>
+
+
+
+        <div id="useraccessTable" class="mt-4 tableFixHead">
+            <table id="tblUserAccess" class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            Employee name
+                        </th>
+                        <th>
+                            Role
+                        </th>
+                        <th>
+                            Date added
+                        </th>
+                        <th>
+                            Actions
+                        </th>
+
+
+
+
+                    </tr>
+                </thead>
+                <tbody id="tblUserAccessBody">
+                </tbody>
+                <tfoot id="tblUserAccessBody">
+                </tfoot>
+            </table>
+        </div>
+
+        <div id="secretaryaccessTable" class="mt-4 tableFixHead d-none">
+            <table id="tblUserAccess" class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            Secretary name
+                        </th>
+                        <th>
+                            Partner name
+                        </th>
+                        <th>
+                           Group
+                        </th>
+                        <th>
+                            Actions
+                        </th>
+
+
+
+
+                    </tr>
+                </thead>
+                <tbody id="tblSecretaryAccessBody">
+                </tbody>
+                <tfoot id="tblUserAccessBody">
+                </tfoot>
+            </table>
+        </div>
+
+@*        <div class="w-100 overflow-auto tableFixHeadExceptions px-3" >
+            <table id="tblmyExceptions" class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            Debtor code
+                        </th>
+                        <th>
+                            Debtor name
+                        </th>
+
+                        <th>
+                            <div class="dropdown-custom">
+                                <a href="" class="btn m-0 p-0 font-weight-bold" role="button" style="line-height:1;" id="PreviouslyDateSentFilter" name="PreviouslyDateSentFilter" onclick="return ViewFilter(this);" aria-haspopup="true">
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            Previously sent date
+                                        </div>
+                                        <div class="ml-1 filter-img disable"></div>
+                                    </div>
+                                </a>
+                                <div class="dropdown-date-menu-custom mt-2" id="PreviouslyDateSentFilterPanel" aria-labelledby="PreviouslyDateSentFilter">
+                                    <div>
+                                        <ul id="PreviouslyDateSentList" class="list-unstyled mt-2">
+                                            <li>
+                                                <label class="font-weight-light check-label-custom">
+                                                    <input class="form-check-input mr-2" name="PreviouslyDateSentListValue" type="radio" value="Newest - Oldest" />Newest - Oldest
+                                                    <span class="checkmark"></span>
+                                                </label>
+                                            </li>
+                                            <li>
+                                                <label class="font-weight-light check-label-custom">
+                                                    <input class="form-check-input mr-2" name="PreviouslyDateSentListValue" type="radio" value="Oldest - Newest" />Oldest - Newest
+                                                    <span class="checkmark"></span>
+                                                </label>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="d-flex">
+                                        <div>
+                                            <div class="input-group-append input-control-date-custom align-items-center" style="width:350px;">
+                                                <input id="PreviouslyDateSentRangeFilter" name="PreviouslyDateSentRangeFilter" type="text" style="border:none;height: 32px;width:305px" autocomplete="off" placeholder="Date range" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="mt-3 d-flex justify-content-center">
+                                        <button class="btn-primary-custom" id="btnApplyFilterPreviouslyDateSent">Apply</button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </th>
+
+                        <th style="min-width: 80px;">
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="tblBodyExceptions">
+                </tbody>
+                <tfoot id="tblFooterExceptions">
+                </tfoot>
+            </table>
+        </div>
+*@        <div class="d-flex justify-content-end">
+            <nav>
+                <ul class="pagination util-pagination"></ul>
+            </nav>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="ModalAddException" tabindex="-1" role="dialog" aria-labelledby="ModalAddException" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border-radius: 0px;">
+            <div class="modal-body py-4 mx-auto" style="width:100%;">
+                <form id="SubmitExceptions" method="post" asp-controller="Settings" asp-action="Submit" enctype="multipart/form-data">
+                    <div class="px-4">
+
+                        <div class="form-group row">
+                            <label asp-for="ClientName">Debtor name</label>
+                            <input asp-for="ClientName" type="text" class="form-control" />
+                            <span asp-validation-for="ClientName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="ClientCode">Debtor code</label>
+                            <input asp-for="ClientCode" type="text" class="form-control" readonly />
+                            <span asp-validation-for="ClientCode" class="text-danger"></span>
+
+                        </div>
+                        <div class="form-group row">
+                            <label asp-for="Reasons">Reasons</label>
+                            <textarea asp-for="Reasons" class="form-control"></textarea>
+                            <span asp-validation-for="Reasons" class="text-danger"></span>
+                        </div>
+
+
+                        <div class="d-flex justify-content-end py-2">
+                            <input type="submit" class="btn btn-primary-custom" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="ModalShowException" tabindex="-1" role="dialog" aria-labelledby="ModalShowException" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border-radius: 0px;">
+            <div class="modal-body py-4 mx-auto" style="width:100%;">
+                    <div class="px-4">
+                        <input type="hidden" id="myRefToRemove" />
+                        <div class="form-group row">
+                            <label>Debtor name</label>
+                            <input id="displayClientName" type="text" class="form-control" readonly/>
+                        </div>
+                        <div class="form-group row">
+                            <label>Debtor code</label>
+                            <input id="displayCode" type="text" class="form-control" readonly />
+                       
+                        </div>
+                        <div class="form-group row">
+                            <label>Reasons</label>
+                            <textarea id="displayReason" class="form-control" readonly></textarea>
+                        </div>
+
+
+                        <div class="d-flex justify-content-end py-2">
+                            <button class="btn-secondary-custom mr-2" data-dismiss="modal">Close</button>
+
+                            <button class="btn-primary-custom" onclick="return RemoveThis();">Remove</button>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="adminLogsModal" tabindex="-1" role="dialog" aria-labelledby="ModalAddToException" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered d-flex align-items-center justify-content-center col-lg-10" style="max-width: 80%;" role="document">
+        <div class="modal-content col-lg-11" style="border-radius: 4px;">
+            <div class="modal-body py-4 mx-auto" style="width:100%;">
+                <div id="ExceptionContactNameHeader" class="h5 font-weight-bold py-2"></div>
+                <input type="hidden" id="ExceptionRefno" />
+
+                <span id='logsLabel' class="my-text-label a-text-orange fw-bold">
+                    Admin logs
+                </span>
+
+
+
+                <div class="col-lg-12 d-flex align-items-center justify-content-between">
+
+                    <div class="d-flex align-items-center searchContainer mt-4 col-lg-4 col-md-6 col-12">
+                        <span class="Appkit4-icon icon-search-outline"></span>
+                        <input id="searchValActivity" onchange='searchAdminLogs()' type="text" class="form-control w-100 me-2 remove-input-border w-100" placeholder="Search" />
+
+                    </div>
+
+                    <button onclick="downloadLogs()"  id="BtnDownload" class="btn my-primary-button">
+                        <span class="Appkit4-icon icon-arrow-down-outline"></span>
+                        Download
+                    </button>
+                </div>
+
+
+
+                <div id="clientTable" class="w-100 overflow-auto tableFixHeadC px-3 mt-4 removeScroll" style="max-height: 500px;">
+                    <table id="tblmyClients" class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Date
+                                </th>
+                                <th>
+                                    Time
+                                </th>
+                                <th>
+                                    Action taker
+                                </th>
+                                <th>
+                                  Action taken
+                                </th>
+
+
+
+                            </tr>
+                        </thead>
+                        <tbody id="tblBodyLogs">
+                        </tbody>
+                        <tfoot id="tblFooterLogs">
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-center py-2">
+                    <button class="my-primary-button button-padding mr-2" data-bs-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="ModalAddToException" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border-radius: 0px;">
+            <div class="modal-body p-5 mx-auto" style="width:100%;">
+                <h4 class="a-text-orange">
+                    Add user
+                </h4>
+
+                <span>Search an employee to fill out the details below</span>
+
+                
+
+                <div class="mt-3">
+                    <span>Employee name</span>
+
+                    <div class="col-lg-12 mt-1">
+                      
+                          @*  <div class="d-flex align-items-center searchContainer">
+                                <span class="Appkit4-icon icon-search-outline"></span>
+                                <input id="RefClientName" type="text" class="form-control w-100 me-2 remove-input-border w-100" placeholder="Search employee name" />
+
+                            </div>*@
+
+                            <div id="groupContainer" class="dropdown-content mt-2 col-lg-12">
+
+                                <input type="text" onblur="removeFocusInput('engagementuserList')" onfocus='focusInput("engagementuserList")' placeholder="Search employee name" id="myInputEngagementUser" onkeyup="filterFunction('myInputEngagementUser','engagementuserList')">
+
+                                <div id="engagementuserList" class="customDropDown myBoxShadow" style="width: 90%; z-index: 2">
+                                </div>
+                            </div>
+                            @* <button id="BtnSubmitReference" style="display: none;">submit</button> *@
+                       
+                    </div>
+                </div>
+
+            
+            
+
+                <div class="mt-3">
+                    <span>Role</span>
+
+                    <div class="form-check">
+                        <input id="regularradio" class="form-check-input" type="radio" name="flexRadioDefault" value="0" onchange='selectedRole("regularradio")'>
+                        <label class="form-check-label" for="flexRadioDefault1">
+                           Regular user
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input id="adminradio" class="form-check-input" type="radio" name="flexRadioDefault" value="1" onchange='selectedRole("adminradio")'>
+                        <label class="form-check-label" for="flexRadioDefault2">
+                            Admin
+                        </label>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-end mt-4">
+                    <div onclick="closeAddUser()" class="my-secondary-button button-padding">
+                        Cancel
+                    </div>
+
+                    <button id="addbutton" disabled onclick="addUserRole()" class="my-primary-button d-flex align-items-center justify-content-center button-padding ms-3 disableBtn">
+                        Add
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addSecretaryModal" tabindex="-1" role="dialog" aria-labelledby="ModalAddToException" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border-radius: 0px;">
+            <div class="modal-body p-5 mx-auto" style="width:100%;">
+                <h4 class="a-text-orange">
+                    Add Secretary
+                </h4>
+
+                <span>Search an employee to fill out the details below</span>
+
+                
+
+                <div class="mt-3">
+                    <span>Secretary name <span style="color: red; font-weight: bold; margin-left: 5px">*</span></span>
+
+                    <div class="col-lg-12 mt-1">
+                      
+                          @*  <div class="d-flex align-items-center searchContainer">
+                                <span class="Appkit4-icon icon-search-outline"></span>
+                                <input id="RefClientName" type="text" class="form-control w-100 me-2 remove-input-border w-100" placeholder="Search employee name" />
+
+                            </div>*@
+
+                            <div id="groupContainer" class="dropdown-content mt-2 col-lg-12">
+
+                                <input type="text" onblur="removeFocusInput('secretaryuserList')" onfocus='focusInput("secretaryuserList")' placeholder="Search secretary name" id="myInputSecretaryUser" onkeyup="filterFunction('myInputSecretaryUser','secretaryuserList')">
+
+                                <div id="secretaryuserList" class="customDropDown  myBoxShadow" style="width: 90%; z-index: 2">
+                                </div>
+                            </div>
+                            @* <button id="BtnSubmitReference" style="display: none;">submit</button> *@
+                       
+                    </div>
+                </div>
+
+                      <div class="mt-3">
+                    <span>Partner name <span style="color: red; font-weight: bold; margin-left: 5px">*</span></span>
+
+                    <div class="col-lg-12 mt-1">
+                      
+                          @*  <div class="d-flex align-items-center searchContainer">
+                                <span class="Appkit4-icon icon-search-outline"></span>
+                                <input id="RefClientName" type="text" class="form-control w-100 me-2 remove-input-border w-100" placeholder="Search employee name" />
+
+                            </div>*@
+
+                            <div id="groupContainer" class="dropdown-content mt-2 col-lg-12">
+
+                                <input type="text" onblur="removeFocusInput('partneruserList')" onfocus='focusInput("partneruserList")' placeholder="Search partner name" id="myInputPartnerUser" onkeyup="filterFunction('myInputPartnerUser','partneruserList')">
+
+                                <div id="partneruserList" class="customDropDown myBoxShadow" style="width: 90%; z-index: 2">
+                                </div>
+                            </div>
+                            @* <button id="BtnSubmitReference" style="display: none;">submit</button> *@
+                       
+                    </div>
+                </div>
+
+            
+            
+
+                  <div class="mt-3">
+                        <span>Assigned group <span style="color: red; font-weight: bold; margin-left: 5px">*</span></span>
+                </div>
+                <div id="groupContainer" class="dropdown-content mt-2 col-lg-12">
+
+                    <input type="text" onblur="removeFocusInput('groupList')" onfocus='focusInput("groupList")' placeholder="Select group" id="groupInput" onkeyup="filterFunction('groupInput', 'groupList')">
+                 
+                    <div id="groupList" class="customDropDown myBoxShadow" style="width: 90%; z-index: 2">
+
+                    </div>
+                </div>
+
+
+
+                <div class="d-flex align-items-center justify-content-end mt-4">
+                    <div onclick="closeAddUser()" class="my-secondary-button button-padding">
+                        Cancel
+                    </div>
+
+                    <button id="addbuttonSecretary" disabled onclick="addUserRole()" class="my-primary-button d-flex align-items-center justify-content-center button-padding ms-3 disableBtn">
+                        Add
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalRemoveUser" tabindex="-1" role="dialog" aria-labelledby="ModalAddToException" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border-radius: 0px;">
+            <div class="modal-body py-4 mx-auto" style="width:100%;">
+                <div id="ExceptionContactNameHeader" class="h5 font-weight-bold py-2"></div>
+                <input type="hidden" id="ExceptionRefno" />
+
+
+                <div class='d-flex'>
+
+                    <div>
+                        <span style='font-size: 40px; color: #d04a02;' class="Appkit4-icon icon-information-fill"></span>
+                    </div>
+
+                    <div style="margin-left: 26px;">
+                            <div>
+                                <span id="label-remove" class="text-label-v2 a-text-orange"></span>
+                            </div>
+
+                            <div class="mt-2">
+                                <span>Are you sure you want to delete <span id="eName"></span> as <span id="userrole"></span>? This process cannot be undone.</span>
+                            </div>
+
+
+                            <div class="d-flex justify-content-end py-2">
+                                <button class="my-secondary-button button-padding mr-2" data-bs-dismiss="modal">Cancel</button>
+
+                                <button id="SubmitException" class="my-primary-button button-padding ms-2" onclick="confirmDeleteUser()">Yes, remove user</button>
+                            </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editSecretaryModal" tabindex="-1" role="dialog" aria-labelledby="ModalAddToException" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border-radius: 0px;">
+            <div class="modal-body p-5 mx-auto" style="width:100%;">
+                <h4 class="a-text-orange">
+                    Edit secretary details
+                </h4>
+
+                <span>Search an employee to fill out the details below</span>
+
+                
+
+                <div class="mt-3">
+                    <span>Secretary name <span style="color: red; font-weight: bold; margin-left: 5px">*</span></span>
+
+                    <div class="col-lg-12 mt-1">
+                      
+                          @*  <div class="d-flex align-items-center searchContainer">
+                                <span class="Appkit4-icon icon-search-outline"></span>
+                                <input id="RefClientName" type="text" class="form-control w-100 me-2 remove-input-border w-100" placeholder="Search employee name" />
+
+                            </div>*@
+
+                            <div id="groupContainer" class="dropdown-content mt-2 col-lg-12">
+
+                                <input type="text" onblur="removeFocusInput('secretaryuserListEdit')" onfocus='focusInput("secretaryuserListEdit")' placeholder="Search secretary name" id="myInputSecretaryUserEdit" onkeyup="filterFunction('myInputSecretaryUserEdit','secretaryuserListEdit')">
+
+                                <div id="secretaryuserListEdit" class="customDropDown myBoxShadow" style="width: 90%; z-index: 2">
+                                </div>
+                            </div>
+                            @* <button id="BtnSubmitReference" style="display: none;">submit</button> *@
+                       
+                    </div>
+                </div>
+
+                      <div class="mt-3">
+                    <span>Partner name</span>
+
+                    <div class="col-lg-12 mt-1">
+                      
+                          @*  <div class="d-flex align-items-center searchContainer">
+                                <span class="Appkit4-icon icon-search-outline"></span>
+                                <input id="RefClientName" type="text" class="form-control w-100 me-2 remove-input-border w-100" placeholder="Search employee name" />
+
+                            </div>*@
+
+                            <div id="groupContainer" class="dropdown-content mt-2 col-lg-12">
+
+                                <input type="text" disabled onblur="removeFocusInput('partneruserListEdit')" onfocus='focusInput("partneruserListEdit")' placeholder="Search partner name" id="myInputPartnerUserEdit" onkeyup="filterFunction('myInputPartnerUserEdit','partneruserListEdit')">
+
+                                <div id="partneruserListEdit" class="customDropDown myBoxShadow" style="width: 90%; z-index: 2">
+                                </div>
+                            </div>
+                            @* <button id="BtnSubmitReference" style="display: none;">submit</button> *@
+                       
+                    </div>
+                </div>
+
+            
+            
+
+                  <div class="mt-3">
+                        <span>Assigned group <span style="color: red; font-weight: bold; margin-left: 5px">*</span></span>
+                </div>
+                <div id="groupContainer" class="dropdown-content mt-2 col-lg-12">
+
+                    <input type="text"  onblur="removeFocusInput('groupListEdit')" onfocus='focusInput("groupListEdit")' placeholder="Select group" id="groupInputEdit" onkeyup="filterFunction('groupInputEdit', 'groupListEdit')">
+                 
+                    <div id="groupListEdit" class="customDropDown myBoxShadow" style="width: 90%; z-index: 2;">
+
+                    </div>
+                </div>
+
+
+
+                <div class="d-flex align-items-center justify-content-end mt-4">
+                    <div onclick="closeAddUser()" class="my-secondary-button button-padding">
+                        Cancel
+                    </div>
+
+                    <button id="editbuttonSecretary" disabled onclick="updateUserRole()" class="my-primary-button d-flex align-items-center justify-content-center button-padding ms-3 disableBtn">
+                        Update
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="modal fade" id="ModalEdiSecretaryConfirm" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" style="border-radius: 0px;">
+                <div class="modal-body py-4 mx-auto" style="width:100%;">
+
+                    <div class='d-flex'>
+
+                        <div>
+                            <span style='font-size: 40px; color: #d04a02;' class="Appkit4-icon icon-information-fill"></span>
+                        </div>
+
+                        <div style="margin-left: 26px;">
+                            <div>
+                                <span class="text-label-v2 a-text-orange">Edit secretary</span>
+                            </div>
+
+                            <div class="mt-2">
+                                <span>Are you sure you want to cancel? Changes will not be saved.</span>
+                            </div>
+
+
+                            <div class="d-flex justify-content-end py-2">
+                                <button class="my-secondary-button button-padding mr-2" onclick="continueEditUser()">Continue editing</button>
+
+                                <button id="cancelEditSecretary" class="my-primary-button button-padding ms-2" onclick="confirmCancelEditUser()">Yes, Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="ModalEditUser" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" >
+            <div class="modal-body p-5 mx-auto" style="width:100%;">
+                <h4 class="a-text-orange">
+                    Edit user role
+                </h4>
+        
+
+
+                <div class="mt-3">
+                    <span>Employee name</span>
+
+                    <div class="col-lg-12 mt-1">
+                        
+                        <input id="nameEdit" disabled value="Test" class="form-control"/>
+                    </div>
+                </div>
+
+                    <div class="mt-3">
+                    <span>Date added</span>
+
+                    <div class="col-lg-12 mt-1">
+                        
+                        <input id="dateEdit" disabled value="Test" class="form-control"/>
+                    </div>
+                </div>
+
+                    <div class="mt-3">
+                        <span>Role</span>
+
+                        <div class="col-lg-12 mt-1">
+
+                            <input id="roleEdit" disabled value="Test" class="form-control" />
+                        </div>
+                    </div>
+
+
+                <div class="mt-3">
+                    <span>Role</span>
+
+                    <div class="form-check mt-2">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="editRegularRadio" onchange='selectedRole("editRegularRadio")'>
+                        <label class="form-check-label" for="flexRadioDefault1">
+                            Regular user
+                        </label>
+                    </div>
+                    <div class="form-check">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="editAdminRadio" onchange='selectedRole("editAdminRadio")'>
+                        <label class="form-check-label" for="flexRadioDefault2">
+                            Admin
+                        </label>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-end mt-4">
+                        <div onclick="closeEditUser()" class="my-secondary-button button-padding">
+                        Cancel
+                    </div>
+
+                    <button disabled id="updateButton" onclick='updateUserRole()' class="my-primary-button d-flex align-items-center disableBtn justify-content-center button-padding ms-3 disableBtn">
+                        Update
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+      
+
+</div>
+
+@section Scripts{
+
+    <environment include="Development">
+        <script src="~/js/utilities.js"></script>
+    </environment>
+    
+    <environment exclude="Development">
+        <script src="~/js/utilities.js"></script>
+    </environment>
+}

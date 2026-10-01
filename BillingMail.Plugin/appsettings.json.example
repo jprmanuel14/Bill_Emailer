@@ -1,0 +1,14 @@
+{
+  "BillingMail": {
+    "ConnectionString": "Server=ph-mlaapp004;Database=BCAT;Trusted_Connection=True;TrustServerCertificate=True;",
+    "CallType": 2,
+    "CallDurationSeconds": 900,
+    "StartTime": "05:00 PM",
+    "SmtpHost": "10.139.108.22",
+    "SmtpPort": 25,
+    "EnableSsl": false,
+    "SenderEmail": "no-reply@billcollectiontool.ph.pwc.com",
+    "SenderName": "PwC Billing Collections",
+    "SupportEmail": "ph_pwc_collections@pwc.com"
+  }
+}

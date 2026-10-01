@@ -1,0 +1,31 @@
+# Build artifacts
+bin/
+obj/
+*.userprefs
+*.suo
+
+# Logs
+logs/
+*.log
+
+# Captured emails (demo output)
+captured_emails/
+
+# User secrets (local dev only)
+**/secrets.json
+
+# IDE / editor
+.vs/
+.vscode/
+.idea/
+*.sln.user
+
+# Local agent notes — not part of the shipped repository
+.kilocode/
+AGENTS.md
+HANDOFF.md
+
+# Legacy projects — not part of the active BillColl_Main codebase
+BCMailService/
+BCMailService.sln
+BCAutomation/

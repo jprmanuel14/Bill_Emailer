@@ -1,0 +1,32 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "bootstrap-daterangepicker@3.0.5",
+      "destination": "wwwroot/lib/bootstrap-daterangepicker/"
+    },
+    {
+      "library": "jqueryui@1.12.1",
+      "destination": "wwwroot/lib/jqueryui/",
+      "files": [
+        "jquery-ui.min.js",
+        "jquery-ui.js",
+        "jquery-ui.css",
+        "jquery-ui.min.css"
+      ]
+    },
+    {
+      "library": "selectize.js@0.13.3",
+      "destination": "wwwroot/lib/selectize.js/",
+      "files": [
+        "js/selectize.min.js",
+        "css/selectize.css",
+        "css/selectize.min.css",
+        "js/selectize.js",
+        "js/standalone/selectize.js",
+        "js/standalone/selectize.min.js"
+      ]
+    }
+  ]
+}
