@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using BillColl_Main.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -20,9 +21,9 @@ namespace BillColl_Main.Filters
     {
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var userContext = context.ControllerContext
-                .ServiceProvider
-                .GetService(typeof(IUserContext)) as IUserContext;
+            var httpContext = context.HttpContext;
+
+            var userContext = httpContext.RequestServices.GetService(typeof(IUserContext)) as IUserContext;
 
             if (userContext == null)
             {
@@ -31,7 +32,7 @@ namespace BillColl_Main.Filters
                 return;
             }
 
-            var principal = context.ActionContext.HttpContext.User;
+            var principal = httpContext.User;
             var currentUser = userContext.Resolve(principal);
             if (!currentUser.IsAdmin)
             {
