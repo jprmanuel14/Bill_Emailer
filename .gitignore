@@ -23,7 +23,6 @@ captured_emails/
 # Local agent notes — not part of the shipped repository
 .kilocode/
 AGENTS.md
-HANDOFF.md
 
 # Legacy projects — not part of the active BillColl_Main codebase
 BCMailService/
