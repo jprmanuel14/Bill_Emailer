@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using BillingMail.Plugin;
 using BillColl_Main.AppDbContext;
 using BillColl_Main.Options;
@@ -9,6 +10,7 @@ using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -39,6 +41,12 @@ namespace BillColl_Main
         public void ConfigureServices(IServiceCollection services)
         {
             ValidateDatabaseConfiguration(Configuration, HostingEnvironment);
+
+            var keyRingPath = Configuration["DataProtection:KeyRing"] ?? "keys";
+            Directory.CreateDirectory(keyRingPath);
+            services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo(keyRingPath))
+                .SetApplicationName("BillColl_Main");
 
             // Authentication settings (SSO toggle for non-production environments)
             services.Configure<AuthSettings>(Configuration.GetSection("AuthSettings"));

@@ -32,14 +32,7 @@ namespace BillColl_Main.Services
         {
             get
             {
-                var connStr = _configuration["Connections:SharedSql:ConnectionString"];
-
-                if (string.IsNullOrWhiteSpace(connStr))
-                {
-                    connStr = _configuration.GetConnectionString("myAppDBConnection");
-                }
-
-                return connStr ?? string.Empty;
+                return _configuration["Connections:SharedSql:ConnectionString"] ?? string.Empty;
             }
         }
 

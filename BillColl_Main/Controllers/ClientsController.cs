@@ -158,6 +158,11 @@ namespace BillColl_Main.Controllers
             string[] arr = myref.Split("|");
             string myClientCode = arr[1];
             var myCContactList = contacts.GetContacts(myClientCode);
+
+            var groupLookup = group.GetGroupCodeList()
+                .Where(g => !string.IsNullOrEmpty(g.Group_Code_WO_Desc))
+                .ToDictionary(g => g.Group_Code_WO_Desc, g => g.Description);
+
             myCContactList.ToList().ForEach(e =>
             {
                 e.eId = dataProtector.Protect(e.Id.ToString());
@@ -166,6 +171,15 @@ namespace BillColl_Main.Controllers
                 e.LastName = ifValueNull(e.LastName);
                 e.Designation = ifValueNull(e.Designation);
                 e.Salutation = ifValueNull(e.Salutation);
+
+                if (!string.IsNullOrEmpty(e.GroupType) && groupLookup.TryGetValue(e.GroupType, out var desc))
+                {
+                    e.Group_Description = desc;
+                }
+                else
+                {
+                    e.Group_Description = "";
+                }
             });
             return Json(myCContactList);
         }

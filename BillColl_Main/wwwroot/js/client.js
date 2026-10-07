@@ -1504,6 +1504,13 @@ function PopulateCClist(a) {
                 myrow += `
                    <tr>
                         <td>
+                            <input type="hidden" class="refFirstName" value="${escapeHtml(d.firstName || '')}" />
+                            <input type="hidden" class="refMiddleName" value="${escapeHtml(d.middleName || '')}" />
+                            <input type="hidden" class="refLastName" value="${escapeHtml(d.lastName || '')}" />
+                            <input type="hidden" class="refSalutation" value="${escapeHtml(d.salutation || '')}" />
+                            <input type="hidden" class="refCGroupDesc" value="${escapeHtml(d.group_Description || '')}" />
+                            <input type="hidden" class="refCGroupType" value="${escapeHtml(d.groupType || '')}" />
+                            <input type="hidden" class="refCLos" value="${escapeHtml(d.los || '')}" />
                             <div class="container p-3">
                                 <span>${d.email}</span>
                             </div>
@@ -2079,74 +2086,34 @@ const viewContactClient = (val) => {
 
     $('#editUserModal').modal('show');
 
+    const row = $(`span[onclick='openEditUser("${val}")']`).closest('tr');
 
+    const groupDesc = row.find('.refCGroupDesc').val() || '';
+    const groupType = row.find('.refCGroupType').val() || '';
+    const los = row.find('.refCLos').val() || '';
 
-    $.getJSON('/edit_client', {
-        i_variable: val
-    }, (v) => {
-        /*    document.getElementById('designatedGroup').innerText = val.description*/
+    FName = row.find('td:eq(0) .refFirstName').val() || ''
+    MName = row.find('td:eq(0) .refMiddleName').val() || ''
+    LName = row.find('td:eq(0) .refLastName').val() || ''
+    Salutation = row.find('td:eq(0) .refSalutation').val() || ''
+    Email = row.find('td:eq(0) span').text().trim() || ''
+    ContactNumber = row.find('td:eq(1) span').text().trim() || ''
+    GroupCode = groupType
+    GroupType = groupType
+    LOS = los
 
-        if (v.length != 0) {
+    document.getElementById('FnameInputEdit').value = FName
+    document.getElementById('MnameInputEdit').value = MName
+    document.getElementById('LnameInputEdit').value = LName
+    document.getElementById('ContactNumberInputEdit').value = ContactNumber
+    document.getElementById('salutationInputEdit').value = Salutation
+    document.getElementById('emailInputEdit').value = Email
+    document.getElementById('designationInputEdit').value = Designation
+    document.getElementById('myInputEdit').value = groupDesc || 'Select group'
+    document.getElementById('designatedLosEdit').value = los
 
-            validEmail = true;
-
-            FName = v[0].first_Name
-            MName = v[0].middle_Name
-            LName = v[0].last_Name
-            Salutation = v[0].salutation
-            Email = v[0].email
-            Designation = v[0].designation
-            GroupCode = v[0].designated_Group_Type
-            LOS = v[0].designated_LOS
-            ContactNumber = v[0].contact_Number
-            CCode = val
-            GroupType = v[0].designated_Group_Id
-            document.getElementById('FnameInputEdit').value = FName
-            document.getElementById('MnameInputEdit').value = MName
-            document.getElementById('LnameInputEdit').value = LName
-            document.getElementById('ContactNumberInputEdit').value = ContactNumber
-            let filteredGroup = ''
-
-            groupCodeList.map((i, k) => {
-                // v[0] is a DataProtection token (opaque), not a group code.
-                // The group selection is handled by the dropdown UI, not by matching tokens.
-            })
-
-
-            //filter group list and equal it to input
-            document.getElementById('myInputEdit').value = filteredGroup
-
-
-            document.getElementById('myInput')
-            document.getElementById('designatedLosEdit').value = LOS
-
-
-
-            document.getElementById('salutationInputEdit').value = Salutation
-            document.getElementById('emailInputEdit').value = Email
-            document.getElementById('designationInputEdit').value = Designation
-
-
-            //groupListEdit
-
-            $(groupList).empty();
-            $(groupListEdit).empty();
-
-
-
-
-            groupCodeList.map((i, k) => {
-
-                let finalVal = JSON.stringify(i)
-                let html = `    
-                       <a target="_blank" class="dropdown-item" onclick='return selectedGroupEdit(${finalVal})'>${i.description}</a>
-                    `
-                let val = escapeHtml(html)
-                $(groupListEdit).append(unescapeHtml(val));
-            })
-
-        }
-    })
+    document.getElementById('updateButton').classList.remove('disableBtn')
+    document.getElementById('updateButton').disabled = true
 }
 
 //addingForm editingForm js

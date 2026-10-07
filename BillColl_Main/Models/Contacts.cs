@@ -16,5 +16,8 @@ namespace BillColl_Main.Models
 
         [NotMapped]
         public string Group_Description { get; set; }
+
+        public string GroupType { get; set; }
+        public string Los { get; set; }
     }
 }
