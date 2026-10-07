@@ -2,11 +2,15 @@
 
 Continuation notes. Read this first before touching the code.
 
-Last updated: 2026-10-02, after the legacy-directory and stale-worktree cleanup.
+Last updated: 2026-10-07. Edit-contact group field populated, DataProtection key ring
+configured, SharedSqlConnectionFactory fallback removed.
 Runtime verified against: PostgreSQL `BCAT` on localhost:5432, Kestrel on localhost:5000.
 **Everything below is now running clean — see section 0 for how to start it.**
 
-**Most recent change:** `BCAutomation/`, `BCMailService/`, `Setup/` and `.kilo/worktrees/`
+**Most recent change:** edit-contact group field populated, DataProtection key ring
+configured, `SharedSqlConnectionFactory` fallback removed.
+
+**Prior change:** `BCAutomation/`, `BCMailService/`, `Setup/` and `.kilo/worktrees/`
 were deleted (~522 MB). They were all build output and merged agent worktrees — **no
 source and no unmerged work was lost**, and the ambiguous duplicate-controller problem
 described in the old P3 entry turned out never to have existed. Read section 3 before
@@ -501,8 +505,10 @@ half-working and only failing later on whichever request first touches a missing
    `PH Report Databank`, `FinAppsDM`, `HRIS`. If an environment renames the *database*
    and not just the server, that needs a code change — flag it rather than working around
    it.
-6. **`DataProtection` keys are not persisted.** Cookies will not survive a restart or a
-   multi-instance deployment until a key ring is shared. Open issue, not addressed yet.
+6. **`DataProtection` keys are now persisted.** `Startup.cs` configures a file-system
+   key ring at `DataProtection:KeyRing` (defaults to `keys/`). For multi-instance
+   deployments, point this at a shared network path. The latent restart-cookie issue
+   is resolved.
 7. **Logging writes to a local `logs/` folder** via `UseBillingMailFileLogging("logs")`.
    On a locked-down production host that write may fail; move to a real sink if so.
 
@@ -844,19 +850,13 @@ Two things this version got wrong, both now fixed in section 9:
 2. **`Forbid()` does not return 403 here.** It returns a 302 to
    `/Account/AccessDenied?ReturnUrl=…`. See section 9.3.
 
-### 8.3 `client.js` dead branch removed — with a caveat
+### 8.3 `client.js` dead branch removed — field now populated from server (DONE)
 
-The always-false comparison at the old line 2115 is gone. **This is a partial fix, and the
-field is still not correctly populated.** Removing the comparison makes the always-false
-branch stop pretending to do work; it does not make `myInputEdit` show the contact's real
-group.
-
-The remaining code sets `myInputEdit` from `filteredGroup`, which is initialised to `''` and
-now has nothing that ever assigns to it — so the field is blank by construction rather than
-by accident. Populating it properly means having the server return the contact's group
-description alongside the contact, not reverse-engineering it client-side from an opaque
-token. The dropdown (`groupListEdit`) is populated and usable, so an operator can select the
-group manually; the field is not silently wrong, it is just not pre-filled.
+The always-false comparison at the old line 2115 is gone. **This is now fully fixed.**
+`ClientsController.GetContactInfo` enriches each contact with `Group_Description` by
+looking up `Group_Code_WO_Desc` against `IGroup.GetGroupCodeList()`. `client.js` reads the
+value from hidden row inputs (`.refCGroupDesc`) and populates `myInputEdit` directly.
+No AJAX lookup required.
 
 The removed loop was also a no-op `groupCodeList.map(...)` whose only body was the dead
 comparison, so deleting it loses nothing else. Left as a comment rather than deleted outright
@@ -1014,27 +1014,30 @@ Start it with `.\run-local.ps1`. There are no known runtime errors.
 - **Legacy directories and stale agent worktrees deleted** — `BCAutomation/`,
   `BCMailService/`, `Setup/`, `.kilo/worktrees/`. ~522 MB, no source lost, greps are now
   unambiguous. See section 3.
+- **Edit-contact dialog now populates `myInputEdit`.** `ClientsController.GetContactInfo`
+  enriches contacts with `Group_Description` via `IGroup.GetGroupCodeList()`. `client.js`
+  reads it from hidden row inputs alongside first/middle/last name, salutation, and LOS.
+  No AJAX call to `/edit_client`.
+- **`SharedSqlConnectionFactory` no longer falls back to `myAppDBConnection`.** The
+  latent risk of passing a PostgreSQL connection string to `SqlConnection` is removed.
+- **DataProtection key ring configured.** Cookies now survive restarts. Path is
+  `DataProtection:KeyRing` (default `keys/`). For multi-instance, point at a shared
+  network path.
 
 ### Still requires code work
 
-1. **Populate the edit-contact group field from the server.** The `client.js` dead branch is
-   removed but `myInputEdit` is still never filled. See section 8.3. This is now the most
-   important remaining item.
-2. **`SharedSqlConnectionFactory` falls back to `myAppDBConnection`.** If that is ever set to
-   the PostgreSQL connection string, the shared-SQL path will hand a PostgreSQL string to
-   `SqlConnection`. It is empty today, so it is latent, not live.
-3. **Decide whether non-browser callers need a real 403.** Today a non-admin hitting a
+1. **Decide whether non-browser callers need a real 403.** Today a non-admin hitting a
    `SettingsController` endpoint gets a 302 to `/Account/AccessDenied`. Fine for a human with
    a browser; if any XHR client or integration consumes these endpoints, return
    `StatusCodeResult(403)` instead. See section 9.3.
-4. **DataProtection key ring** — see item 6 below; it is configuration plus a small
-   `Startup.cs` registration.
+2. **Rotate the leaked secrets** — the database password and `AzureAd:ClientSecret` were
+   committed in plain text and must be considered compromised. See section 4.3 item 3.
+3. **Re-create the `DEVADMIN` `User_Role` row** in any new environment. Since `/Settings` is
+   now server-enforced, without this row the Utilities page is denied for everyone locally.
+   The row is inert outside Development, so it is safe to leave in place — see section 3.
 
 ### Still requires operational work, no code
 
-5. **Rotate the leaked secrets** — the database password and `AzureAd:ClientSecret` were
+4. **Rotate the leaked secrets** — the database password and `AzureAd:ClientSecret` were
    committed in plain text and must be considered compromised. See section 4.3 item 3.
-6. **DataProtection key ring** — needed for restarts and multiple instances.
-7. **Re-create the `DEVADMIN` `User_Role` row** in any new environment. Since `/Settings` is
-   now server-enforced, without this row the Utilities page is denied for everyone locally.
-   The row is inert outside Development, so it is safe to leave in place — see section 3.
+5. **Re-create the `DEVADMIN` `User_Role` row** in any new environment ...
